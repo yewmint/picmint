@@ -1,0 +1,69 @@
+{
+  "name": "picmint",
+  "version": "0.0.0",
+  "description": "tag based picture management application",
+  "main": "./dist/main.js",
+  "scripts": {
+    "rebuild": "electron-rebuild",
+    "start": "electron .",
+    "clean": "rm -rf dist/*",
+    "build": "npm run clean && webpack --profile --colors",
+    "build:watch": "npm run build -- --watch",
+    "build:release": "cross-env NODE_ENV=production npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yewmint/picmint.git"
+  },
+  "keywords": [
+    "picture",
+    "management",
+    "application",
+    "tag"
+  ],
+  "author": "yewmint",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yewmint/picmint/issues"
+  },
+  "homepage": "https://github.com/yewmint/picmint#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-plugin-version-inline": "^1.0.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "concurrently": "^3.5.1",
+    "copy-webpack-plugin": "^4.2.3",
+    "cross-env": "^5.1.1",
+    "ejs-loader": "^0.3.0",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.47.1",
+    "electron-react-devtools": "^0.5.2",
+    "electron-rebuild": "^1.6.0",
+    "eslint": "^4.12.1",
+    "eslint-config-standard-react": "^5.0.0",
+    "eslint-plugin-react": "^7.5.1",
+    "file-loader": "^1.1.5",
+    "html-webpack-include-assets-plugin": "^1.0.2",
+    "html-webpack-plugin": "^2.30.1",
+    "webpack": "^3.9.1",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "dependencies": {
+    "classname": "0.0.0",
+    "electron-vibrancy": "^0.1.3",
+    "express": "^4.16.2",
+    "jss": "^9.3.3",
+    "moment": "^2.19.3",
+    "node-loader": "^0.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-icons": "^2.2.7",
+    "react-jss": "^8.1.0"
+  }
+}
