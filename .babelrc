@@ -1,9 +1,10 @@
 {
   "presets": [
+    "env",
     "react"
   ],
   "plugins": [
-    "transform-react-jsx",
+    "react-hot-loader/babel",
     "version-inline"
   ]
 }
