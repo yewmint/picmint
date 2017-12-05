@@ -6,7 +6,7 @@ import { join } from 'path'
 import settings from '../app.config.json'
 import iconPath from '../asset/icon@0.125x.png'
 
-const INDEX_PATH = 'index.html'
+const INDEX_PATH = '/'
 
 let PORT = 3000
 let PATH_NAME = INDEX_PATH
@@ -31,11 +31,12 @@ function createWindow () {
     title: settings.WINDOW_TITLE,
     width: settings.WINDOW_WIDTH, 
     height: settings.WINDOW_HEIGHT,
-    resizable: true,
+    resizable: false,
     useContentSize: true,
     autoHideMenuBar: true,
     icon,
-    frame: false
+    frame: false,
+    show: false
   })
 
   win.loadURL(HTTP_PATH)

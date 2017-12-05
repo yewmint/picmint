@@ -1,7 +1,7 @@
 import React from 'react'
 import classname from 'classname'
-import jss from 'jss'
 import PropTypes from 'prop-types'
+import jss from 'jss'
 import preset from 'jss-preset-default'
 jss.setup(preset())
 
@@ -18,7 +18,6 @@ const styles = {
     display: 'inline-grid',
     width: '32px',
     height: '32px',
-    'line-height': '32px',
     'border-radius': '0',
     '-webkit-app-region': 'no-drag',
     'background-color': 'transparent',
@@ -26,7 +25,7 @@ const styles = {
     'padding': '8px',
     'transition': 'background-color 100ms',
     '&:hover': {
-      'background-color': '#888',
+      'background-color': '#aaa',
       'transition': 'background-color 100ms'
     },
     '&:focus': {
@@ -54,7 +53,7 @@ export default class TitleButton extends React.Component {
 
   render (){
     return (
-      <button className={classname(color(this.props.color), classes.btn)}>
+      <button className={classname(color(this.props.color), classes.btn)} onClick={() => this.props.callback()}>
         {this.renderIcon()}
       </button>
     )
@@ -63,10 +62,12 @@ export default class TitleButton extends React.Component {
 
 TitleButton.defaultProps = {
   color: '#555',
-  iconName: 'close'
+  iconName: 'close',
+  callback: () => {}
 }
 
 TitleButton.propTypes = {
   color: PropTypes.string,
-  iconName: PropTypes.string
+  iconName: PropTypes.string,
+  callback: PropTypes.func
 }

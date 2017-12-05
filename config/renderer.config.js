@@ -46,7 +46,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.png$/,
+        test: /\.png$|\.jpg$/,
         loader: 'file-loader',
         options: {
           outputPath: './img/'
@@ -65,16 +65,16 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     // do not emit compiled assets that include errors
 
-    // new CopyWebpackPlugin([
-    //   { from: 'lib/css/*.css', to: './css/', flatten: true },
-    //   { from: 'src/index.css', to: './css/' }
-    // ]),
+    new CopyWebpackPlugin([
+      { from: 'lib/css/*.css', to: './css/', flatten: true },
+      { from: 'src/index.css', to: './css/' }
+    ]),
 
-    // new HtmlWebpackPlugin({
-    //   title: WINDOW_TITLE,
-    //   filename: 'index.html',
-    //   template: 'src/index.ejs'
-    // }),
+    new HtmlWebpackPlugin({
+      title: WINDOW_TITLE,
+      filename: 'index.html',
+      template: 'src/index.ejs'
+    }),
   ],
 
   devServer: {

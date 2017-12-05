@@ -4,7 +4,7 @@ const nodeExternals = require('webpack-node-externals')
 module.exports = {
   entry: './src/main.js',
 
-  target: 'electron',
+  target: 'electron-main',
 
   externals: [nodeExternals()],
 
