@@ -1,8 +1,10 @@
 import React from 'react'
-import jss from 'jss'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import classname from 'classname'
+import jss from 'jss'
+import preset from 'jss-preset-default'
+jss.setup(preset())
 
 const styles = {
   btn: {

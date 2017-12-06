@@ -1,20 +1,17 @@
 import React from 'react'
 import classname from 'classname'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
-import Page from './Page'
-import ThumbnailList from './ThumbnailList'
-import InputText from './InputText'
+import { Readonly, Tag } from './input'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 jss.setup(preset())
 
 const styles = {
-  feature: {
-    margin: {
-      top: 20,
-      bottom: 20
-    }
+  info: {
+    width: 240,
+    height: 680,
+    overflow: 'auto',
+    padding: 16
   }
 }
 
@@ -26,11 +23,13 @@ export default class DetailInfo extends React.Component {
   }
 
   render (){
-    let img = this.props.img
-    
     return (
-      <div>
-        <InputText text="Id" field="id" />
+      <div className={classname(classes.info)}>
+        <Readonly field="ID" value="566" />
+        <Readonly field="Archive" value="3" />
+        <Readonly field="Size" value="1920 x 1080" />
+        <Readonly field="Date" value="2017/12/06" />
+        <Tag tags={['abc', 'def', 'ghi', 'jkl', 'sdfl', 'qwrl']} />
       </div>
     )
   }

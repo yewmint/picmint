@@ -40,7 +40,7 @@ class Detail extends React.Component {
     return (
       <div className={classes.detail}>
         <DetailInfo img={img} />
-        <DetailImage src={img.src} />
+        <DetailImage src={img.src}/>
       </div>
     )
   }

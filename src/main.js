@@ -1,6 +1,7 @@
-import { app, BrowserWindow, nativeImage } from 'electron'
+import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { format } from 'url'
 import { join } from 'path'
+import { exec } from 'child_process'
 //import './server'
 
 import settings from '../app.config.json'
@@ -45,6 +46,17 @@ function createWindow () {
   win.on('closed', () => {
     win = null
     app.quit()
+  })
+
+  ipcMain.on('open-image', (ev, url) => {
+    if (process.env['NODE_ENV'] === 'production'){
+      let imgPath = join(app.getAppPath(), 'dist', url)
+      exec(`start ${imgPath}`)
+    }
+    else {
+      let imgPath = join('http://127.0.0.1:3000/', url)
+      exec(`start ${imgPath}`)
+    }
   })
 }
 

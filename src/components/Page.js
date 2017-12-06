@@ -18,10 +18,12 @@ const styles = {
     y: 0,
     'overflow-wrap': 'break-word',
     opacity: 0,
+    'z-index': 0,
     transform: 'translateY(-20px)',
     transition: `opacity ${DURATION}ms, `
       + `transform ${DURATION}ms ease-in`,
     '&.show': {
+      'z-index': 10,
       opacity: 1,
       transform: 'translateY(0)',
       transition: `opacity ${DURATION}ms, `
