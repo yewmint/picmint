@@ -65,6 +65,8 @@ export default class Page extends React.Component {
         child => React.cloneElement(child, match.params)
       )
     }
+
+    console.log(this.props.path, isMatch)
     
     return (
       <Transition 

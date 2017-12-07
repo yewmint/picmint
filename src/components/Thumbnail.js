@@ -39,8 +39,12 @@ export default class Thumbnail extends React.Component{
   }
 
   render (){
+    let id = this.props.id
+    let archive = this.props.archive
+    let src = `/store/thumbs/${archive}/${id}.jpg`
+
     return (
-      <Link to={"/detail/" + this.props.id}>
+      <Link to={'/detail/' + this.props.id}>
         <div className={classes.thumbnail}>
           <img src={this.props.thumb} />
         </div>
@@ -51,10 +55,10 @@ export default class Thumbnail extends React.Component{
 
 Thumbnail.defaultProps = {
   id: 0,
-  thumb: defaultImg,
+  archive: 1
 }
 
 Thumbnail.propTypes = {
-  id: PropTypes.number,
-  thumb: PropTypes.string
+  id: PropTypes.number.isRequired,
+  archive: PropTypes.number.isRequired
 }

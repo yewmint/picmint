@@ -77,7 +77,7 @@ export default class ThumbnailList extends React.Component {
       <div>
         <div className={classes.list} style={style}>
           {renderImgs.map((val) => (
-            <Thumbnail key={val.id} id={val.id} src={val.src} />
+            <Thumbnail key={val.id} id={val.id} archive={val.archive} />
           ))}
         </div>
         <div className={classes.nav} >
@@ -98,7 +98,7 @@ ThumbnailList.defaultProps = {
 ThumbnailList.propTypes = {
   line: PropTypes.number,
   imgs: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    src: PropTypes.string
+    id: PropTypes.number,
+    archive: PropTypes.number
   }))
 }

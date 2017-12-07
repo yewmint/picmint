@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import classname from 'classname'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
@@ -19,15 +20,14 @@ const styles = {
 
 const { classes } = jss.createStyleSheet(styles).attach()
 
-// DEBUG: 
-const imgs = _.range(32).map((val) => ({ id: val }))
-
-export default class Feature extends React.Component {
+class Feature extends React.Component {
   constructor (props){
     super(props)
   }
 
   render (){
+    let imgs = this.props.imgs
+
     return (
       <Page path="/feature">
         <div className={classes.feature}>
@@ -39,7 +39,11 @@ export default class Feature extends React.Component {
 }
 
 Feature.defaultProps = {
+  imgs: []
 }
 
 Feature.propTypes = {
+  imgs: PropTypes.arrayOf(PropTypes.object)
 }
+
+export default connect(state => state.feature)(Feature)
