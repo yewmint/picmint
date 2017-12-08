@@ -34,7 +34,7 @@ export default class Image extends React.Component {
     return (
       <ImageLoader
         wrapper={React.DOM.div}
-        // preload={() => this.renderPreload()}
+        preload={() => this.renderPreload()}
         style={{display: 'grid'}}
         src={this.props.src}
       >
