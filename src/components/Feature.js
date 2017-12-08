@@ -29,11 +29,9 @@ class Feature extends React.Component {
     let imgs = this.props.imgs
 
     return (
-      <Page path="/feature">
-        <div className={classes.feature}>
-          <ThumbnailList line={4} imgs={imgs} />
-        </div>
-      </Page>
+      <div className={classes.feature}>
+        <ThumbnailList line={4} imgs={imgs} />
+      </div>
     )
   }
 }
@@ -46,4 +44,10 @@ Feature.propTypes = {
   imgs: PropTypes.arrayOf(PropTypes.object)
 }
 
-export default connect(state => state.feature)(Feature)
+const StoreFeature = connect(state => state.feature)(Feature)
+
+export default () => (
+  <Page path="/feature">
+    <StoreFeature />
+  </Page>
+)

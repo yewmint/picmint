@@ -1,14 +1,13 @@
 import DB from 'better-sqlite3'
 import sqlstr from 'sqlstring'
 import _ from 'lodash'
-import { format, debuglog } from 'util'
+import { format } from 'util'
 import moment from 'moment'
 
 import { DB_PATH } from '../../app.config.json'
 
 const NUM_PER_ARCHIVE = 100
 
-const log = debuglog('DB: ')
 const sqlite = new DB(DB_PATH)
 
 sqlite.prepare(`
@@ -48,6 +47,10 @@ INSERT INTO images VALUES(?, ?, ?, ?, ?, ?)
 
 const UPDATE_QUERY = `
 UPDATE images SET tags = %s WHERE id = %s
+`
+
+const GET_QUERY = `
+SELECT * FROM images WHERE id = %d LIMIT 1
 `
 
 const db = {
@@ -105,7 +108,7 @@ const db = {
   },
 
   updateTags (id, tags = ''){
-    if (!_.isNumber(id) || id <= 0 | !_.isString(tags)){
+    if (!_.isNumber(id) || id <= 0 || !_.isString(tags)){
       return { success: false }
     }
 
@@ -116,6 +119,24 @@ const db = {
     try {
       let info = sqlite.prepare(query).run()
       return { success: info.changes === 1 }
+    }
+    catch (e){
+      return { success: false, error: e.stack }
+    }
+  },
+
+  getImg (id){
+    if (!_.isNumber(id) || id <= 0){
+      return { success: false, error: 'DB: Invalid id' }
+    }
+
+    let query = format(GET_QUERY, id)
+    
+    try {
+      let img = sqlite.prepare(query).get()
+      console.log(query)
+      console.log(img)
+      return { success: true, img }
     }
     catch (e){
       return { success: false, error: e.stack }

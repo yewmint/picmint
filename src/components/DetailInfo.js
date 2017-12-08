@@ -23,20 +23,31 @@ export default class DetailInfo extends React.Component {
   }
 
   render (){
+    let img = this.props.img
+
     return (
       <div className={classname(classes.info)}>
-        <Readonly field="ID" value="566" />
-        <Readonly field="Archive" value="3" />
-        <Readonly field="Size" value="1920 x 1080" />
-        <Readonly field="Date" value="2017/12/06" />
-        <Tag tags={['abc', 'def', 'ghi', 'jkl', 'sdfl', 'qwrl']} />
+        <Readonly field="ID" value={img.id} />
+        <Readonly field="Archive" value={img.archive} />
+        <Readonly field="Size" value={`${img.width} x ${img.height}`} />
+        <Readonly field="Date" value={img.date} />
+        <Tag tags={img.tags.split(/\s+/)} />
       </div>
     )
   }
 }
 
 DetailInfo.defaultProps = {
+
 }
 
 DetailInfo.propTypes = {
+  img: PropTypes.shape({
+    id: PropTypes.number,
+    archive: PropTypes.number,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    date: PropTypes.string,
+    tags: PropTypes.string
+  })
 }

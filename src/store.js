@@ -3,3 +3,5 @@ import { reducer } from './actions'
 
 const store = createStore(reducer)
 export default store
+
+console.log(store.getState())

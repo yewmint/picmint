@@ -1,9 +1,13 @@
 import { combineReducers } from 'redux'
 
-import { reducer as featureReducer } from './feature'
+import { reducer as featureR } from './feature'
+import { reducer as detailR, actions as detailA } from './detail'
 
 export const reducer = combineReducers({
-  feature: featureReducer
+  feature: featureR,
+  detail: detailR
 })
 
-export const actions = {}
+export const actions = {
+  ...detailA
+}

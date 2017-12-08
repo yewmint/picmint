@@ -6,7 +6,7 @@ import { Route } from 'react-router-dom'
 import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
-import { isMaster } from 'cluster';
+import { isMaster } from 'cluster'
 jss.setup(preset())
 
 const DURATION = 200
@@ -65,8 +65,6 @@ export default class Page extends React.Component {
         child => React.cloneElement(child, match.params)
       )
     }
-
-    console.log(this.props.path, isMatch)
     
     return (
       <Transition 

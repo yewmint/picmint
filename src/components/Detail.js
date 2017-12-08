@@ -1,6 +1,7 @@
 import React from 'react'
 import classname from 'classname'
 import PropTypes from 'prop-types'
+import { rpc } from '../utils'
 import Page from './Page'
 import _ from 'lodash'
 import DetailInfo from './DetailInfo'
@@ -20,27 +21,28 @@ const styles = {
 
 const { classes } = jss.createStyleSheet(styles).attach()
 
-import defaultSrc from '../../asset/src.jpg'
-import defaultThumb from '../../asset/icon-trans@0.5x.png'
-const img = {
-  id: 10,
-  src: defaultSrc,
-  thumb: defaultThumb,
-  tags: '1 2 3 4 5 6 7'
-}
-
 class Detail extends React.Component {
   constructor (props){
     super(props)
+
+    let result = rpc.call('db-get-img', Number.parseInt(props.id))
+    if (result.success) {
+      this.img = result.img
+    }
   }
 
   render (){
-    let id = _.isUndefined(this.props.id) ? -1 : this.props.id
+    if (!this.img){
+      return (<div />)
+    }
+
+    let img = this.img
+    let src = `/store/imgs/${img.archive}/${img.id}.jpg`
 
     return (
       <div className={classes.detail}>
         <DetailInfo img={img} />
-        <DetailImage src={img.src}/>
+        <DetailImage src={src} width={img.width} height={img.height} />
       </div>
     )
   }
@@ -50,6 +52,7 @@ Detail.defaultProps = {
 }
 
 Detail.propTypes = {
+  id: PropTypes.string
 }
 
 /**

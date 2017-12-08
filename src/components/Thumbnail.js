@@ -1,21 +1,21 @@
 import React from 'react'
 import jss from 'jss'
 import PropTypes from 'prop-types'
+import Image from './Image'
 import { Link } from 'react-router-dom'
 import preset from 'jss-preset-default'
 jss.setup(preset())
 
-import defaultImg from '../../asset/icon-trans@0.5x.png'
-
 const styles = {
   thumbnail: {
+    display: 'grid',
     width: 128,
     height: 128,
-    'background-color': 'white',
+    'background-color': '#f1f1f1',
     cursor: 'pointer',
     overflow: 'hidden',
     'border-radius': '8px',
-    'box-shadow': '0 2px 4px #aaa',
+    'box-shadow': '0 1px 5px 1px #888',
     transition: 'box-shadow 200ms ease-in-out, '
       + 'transform 200ms ease-in-out',
     '&:hover': {
@@ -44,9 +44,9 @@ export default class Thumbnail extends React.Component{
     let src = `/store/thumbs/${archive}/${id}.jpg`
 
     return (
-      <Link to={'/detail/' + this.props.id}>
+      <Link to={'/detail/' + id}>
         <div className={classes.thumbnail}>
-          <img src={this.props.thumb} />
+          <img src={src} />
         </div>
       </Link>
     )
@@ -54,8 +54,6 @@ export default class Thumbnail extends React.Component{
 }
 
 Thumbnail.defaultProps = {
-  id: 0,
-  archive: 1
 }
 
 Thumbnail.propTypes = {
