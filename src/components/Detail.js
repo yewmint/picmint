@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import { actions } from '../actions'
 import jss from 'jss'
 import preset from 'jss-preset-default'
+import { tmpdir } from 'os';
 jss.setup(preset())
 
 const styles = {
@@ -28,9 +29,13 @@ class Detail extends React.Component {
     super(props)
 
     this.img = props.img
-    this.props.removeTag('rainbow')
+    console.log(props.img)
+  }
+
+  componentDidMount() {
     if (!this._isLoaded()){
       this._loadImg()
+      this.props.removeTag('rainbow')
     }
   }
 
@@ -68,7 +73,13 @@ Detail.propTypes = {
 }
 
 const ConnectedDetail = connect(
-  state => state.detail,
+  state => {
+    console.log('select')
+    console.log(state.detail.img)
+    console.log(window.store.getState())
+    return { img: state.detail.img }
+  },
+  
   dispatch => ({ 
     setup: img => dispatch(actions.detail.setup(img)),
     removeTag: tag => dispatch(actions.detail.removeTag(tag)),

@@ -4,4 +4,8 @@ import { reducer } from './actions'
 const store = createStore(reducer)
 export default store
 
-console.log(store.getState())
+window.store =store
+// setInterval(
+//   () => console.log('store: ', store.getState()),
+//   2000
+// )
