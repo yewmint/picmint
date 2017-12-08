@@ -58,7 +58,7 @@ export default class ThumbnailList extends React.Component {
     }
 
     this.numPerPage = props.line * 8
-    this.isPaged = this.numPerPage > props.imgs.length
+    this.isPaged = this.numPerPage < props.imgs.length
   }
 
   render (){
@@ -80,11 +80,15 @@ export default class ThumbnailList extends React.Component {
             <Thumbnail key={val.id} id={val.id} archive={val.archive} />
           ))}
         </div>
-        <div className={classes.nav} >
-          <button><MdKeyboardArrowLeft /></button>
-          <span>1/9</span>
-          <button><MdKeyboardArrowRight /></button>
-        </div>
+        {
+          this.isPaged && (
+            <div className={classes.nav} >
+              <button><MdKeyboardArrowLeft /></button>
+              <span>1/9</span>
+              <button><MdKeyboardArrowRight /></button>
+            </div>
+          )
+        }
       </div>
     )
   }

@@ -32,3 +32,21 @@ img {
   background: #ddd;
   border-radius: 20px;
 }
+
+.anim-page-fadein {
+  animation-name: fadein;
+  animation-duration: 100ms;
+  animation-timing-function: ease-out;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

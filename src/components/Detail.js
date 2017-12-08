@@ -6,6 +6,8 @@ import Page from './Page'
 import _ from 'lodash'
 import DetailInfo from './DetailInfo'
 import DetailImage from './DetailImage'
+import { connect } from 'react-redux'
+import { actions } from '../actions'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 jss.setup(preset())
@@ -25,17 +27,27 @@ class Detail extends React.Component {
   constructor (props){
     super(props)
 
-    let result = rpc.call('db-get-img', Number.parseInt(props.id))
+    this.img = props.img
+    this.props.removeTag('rainbow')
+    if (!this._isLoaded()){
+      this._loadImg()
+    }
+  }
+
+  _loadImg (){
+    let id = Number.parseInt(this.props.id)
+    let result = rpc.call('db-get-img', id)
     if (result.success) {
+      this.props.setup(result.img)
       this.img = result.img
     }
   }
 
-  render (){
-    if (!this.img){
-      return (<div />)
-    }
+  _isLoaded (){
+    return Number.parseInt(this.props.id) === this.props.img.id
+  }
 
+  render (){
     let img = this.img
     let src = `/store/imgs/${img.archive}/${img.id}.jpg`
 
@@ -48,18 +60,26 @@ class Detail extends React.Component {
   }
 }
 
-Detail.defaultProps = {
+Detail.propTypes = {
+  id: PropTypes.string.isRequired,
+  img: PropTypes.shape({
+    id: PropTypes.number.isRequired
+  }).isRequired
 }
 
-Detail.propTypes = {
-  id: PropTypes.string
-}
+const ConnectedDetail = connect(
+  state => state.detail,
+  dispatch => ({ 
+    setup: img => dispatch(actions.detail.setup(img)),
+    removeTag: tag => dispatch(actions.detail.removeTag(tag)),
+  })
+)(Detail)
 
 /**
  * wrap Detail to accept params as props from Page
  */
 export default () => (
   <Page path="/detail/:id">
-    <Detail />
+    <ConnectedDetail />
   </Page>
 )

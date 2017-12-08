@@ -134,8 +134,6 @@ const db = {
     
     try {
       let img = sqlite.prepare(query).get()
-      console.log(query)
-      console.log(img)
       return { success: true, img }
     }
     catch (e){

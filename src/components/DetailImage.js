@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import Page from './Page'
 import _ from 'lodash'
 import DetailInfo from './DetailInfo'
+import Image from './Image'
 import { exec } from 'child_process'
 import { ipcRenderer } from 'electron'
 import jss from 'jss'
@@ -37,7 +38,7 @@ export default class DetailImage extends React.Component {
     super(props)
 
     this._initSize()
-
+    
     this.state = {
       scaleRatio: 1
     }

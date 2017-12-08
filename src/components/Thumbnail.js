@@ -46,7 +46,7 @@ export default class Thumbnail extends React.Component{
     return (
       <Link to={'/detail/' + id}>
         <div className={classes.thumbnail}>
-          <img src={src} />
+          <Image src={src} />
         </div>
       </Link>
     )

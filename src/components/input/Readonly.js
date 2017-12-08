@@ -26,6 +26,6 @@ Readonly.defaultProps = {
 }
 
 Readonly.propTypes = {
-  field: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  field: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
 }
