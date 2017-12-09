@@ -16,7 +16,8 @@ const DEFAULT = {
 export const actions = createActions({
   DETAIL: {
     SETUP: img => ({ img }),
-    REMOVE_TAG: tag => ({ tag })
+    REMOVE_TAG: tag => ({ tag }),
+    NEW_TAG: tag => ({ tag })
   }
 })
 
@@ -27,10 +28,13 @@ export const reducer = handleActions({
     },
 
     REMOVE_TAG: (state, { payload: { tag } }) => {
-      let tags = state.img.tags
-      let ntags = tags.replace(new RegExp(`\\s*${tag}\\s*`), ' ')
-      let nstate = Immutable.fromJS(state).setIn(['img', 'tags'], ntags).toJS()
-      return nstate
+      let tags = _.without(state.img.tags.split(/\s+/), tag).join(' ')
+      return Immutable.fromJS(state).setIn(['img', 'tags'], tags).toJS()
+    },
+    
+    NEW_TAG: (state, { payload: { tag } }) => {
+      let tags = _.uniq(_.concat(state.img.tags.split(/\s+/), tag)).join(' ')
+      return Immutable.fromJS(state).setIn(['img', 'tags'], tags).toJS()
     }
   }
 }, DEFAULT)

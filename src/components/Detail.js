@@ -10,7 +10,6 @@ import { connect } from 'react-redux'
 import { actions } from '../actions'
 import jss from 'jss'
 import preset from 'jss-preset-default'
-import { tmpdir } from 'os';
 jss.setup(preset())
 
 const styles = {
@@ -27,15 +26,12 @@ const { classes } = jss.createStyleSheet(styles).attach()
 class Detail extends React.Component {
   constructor (props){
     super(props)
-
-    this.img = props.img
-    console.log(props.img)
   }
 
   componentDidMount() {
     if (!this._isLoaded()){
       this._loadImg()
-      this.props.removeTag('rainbow')
+      // this.props.removeTag('rainbow')
     }
   }
 
@@ -44,7 +40,6 @@ class Detail extends React.Component {
     let result = rpc.call('db-get-img', id)
     if (result.success) {
       this.props.setup(result.img)
-      this.img = result.img
     }
   }
 
@@ -53,7 +48,7 @@ class Detail extends React.Component {
   }
 
   render (){
-    let img = this.img
+    let img = this.props.img
     let src = `/store/imgs/${img.archive}/${img.id}.jpg`
 
     return (
@@ -73,16 +68,9 @@ Detail.propTypes = {
 }
 
 const ConnectedDetail = connect(
-  state => {
-    console.log('select')
-    console.log(state.detail.img)
-    console.log(window.store.getState())
-    return { img: state.detail.img }
-  },
-  
+  state => state.detail,
   dispatch => ({ 
     setup: img => dispatch(actions.detail.setup(img)),
-    removeTag: tag => dispatch(actions.detail.removeTag(tag)),
   })
 )(Detail)
 

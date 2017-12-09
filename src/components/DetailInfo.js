@@ -31,7 +31,7 @@ export default class DetailInfo extends React.Component {
         <Readonly field="Archive" value={img.archive} />
         <Readonly field="Size" value={`${img.width} x ${img.height}`} />
         <Readonly field="Date" value={img.date} />
-        <Tag tags={img.tags.split(/\s+/)} />
+        <Tag />
       </div>
     )
   }
