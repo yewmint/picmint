@@ -9,10 +9,8 @@ import preset from 'jss-preset-default'
 jss.setup(preset())
 
 const styles = {
-  textarea: {
-    margin: {
-      top: 4
-    }
+  section: {
+    transition: 'all 100ms'
   }
 }
 
@@ -25,12 +23,16 @@ export default class TagSection extends React.Component {
 
   render (){
     let tags = this.props.tags
-    let onTagRemove = this.props.onTagRemove
+    let onRemoveTag = this.props.onRemoveTag
 
     return (
-      <div>
+      <div className={classes.section}>
         {tags.map((tag) => (
-          <TagBar key={tag} tag={tag} onRemove={() => onTagRemove(tag)} />
+          <TagBar 
+            key={tag} 
+            tag={tag}
+            onRemove={onRemoveTag} 
+          />
         ))}
       </div>
     )
@@ -39,10 +41,10 @@ export default class TagSection extends React.Component {
 
 TagSection.defaultProps = {
   tags: [],
-  onTagRemove: _.noop
+  onRemoveTag: _.noop
 }
 
 TagSection.propTypes = {
   tags: PropTypes.arrayOf(PropTypes.string),
-  onTagRemove: PropTypes.func
+  onTagRonRemoveTagemove: PropTypes.func
 }

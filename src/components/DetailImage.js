@@ -37,16 +37,20 @@ export default class DetailImage extends React.Component {
   constructor (props){
     super(props)
 
-    this._initSize()
+    this._initSize(props)
     
     this.state = {
       scaleRatio: 1
     }
   }
 
-  _initSize (){
-    let width = this.props.width
-    let height = this.props.height
+  componentWillReceiveProps (nextProps){
+    this._initSize(nextProps)
+  }
+
+  _initSize (props){
+    let width = props.width
+    let height = props.height
     let whRatio = width / height
 
     if (width > WIDTH){

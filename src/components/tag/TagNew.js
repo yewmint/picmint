@@ -52,14 +52,42 @@ const { classes } = jss.createStyleSheet(styles).attach()
 export default class TagNew extends React.Component {
   constructor (props){
     super(props)
+    this.state = { value: '' }
+  }
+
+  handleChange(event) {
+    this.setState({ value: event.target.value })
+  }
+
+  handleClick() {
+    let { onNewTag } = this.props
+    let value = _.compact(this.state.value.split(/\s+/)).join('-')
+
+    if (value.length > 0){
+      onNewTag(value)
+      this.setState({ value: '' })
+    }
   }
 
   render (){
     return (
       <div className={classes.new}>
-        <input />
-        <button ><MdAdd /></button>
+        <input 
+          type="text" 
+          value={this.state.value} 
+          onChange={ev => this.handleChange(ev)} 
+          placeholder={'Enter tag'}
+        />
+        <button onClick={(ev) => this.handleClick(ev)} ><MdAdd /></button>
       </div>
     )
   }
+}
+
+TagNew.defaultProps = {
+  onNewTag: [],
+}
+
+TagNew.propTypes = {
+  onNewTag: PropTypes.func,
 }

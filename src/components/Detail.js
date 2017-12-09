@@ -26,11 +26,12 @@ const { classes } = jss.createStyleSheet(styles).attach()
 class Detail extends React.Component {
   constructor (props){
     super(props)
+  }
 
-    this.img = props.img
-    this.props.removeTag('rainbow')
+  componentDidMount() {
     if (!this._isLoaded()){
       this._loadImg()
+      // this.props.removeTag('rainbow')
     }
   }
 
@@ -39,7 +40,6 @@ class Detail extends React.Component {
     let result = rpc.call('db-get-img', id)
     if (result.success) {
       this.props.setup(result.img)
-      this.img = result.img
     }
   }
 
@@ -48,7 +48,7 @@ class Detail extends React.Component {
   }
 
   render (){
-    let img = this.img
+    let img = this.props.img
     let src = `/store/imgs/${img.archive}/${img.id}.jpg`
 
     return (
@@ -71,7 +71,6 @@ const ConnectedDetail = connect(
   state => state.detail,
   dispatch => ({ 
     setup: img => dispatch(actions.detail.setup(img)),
-    removeTag: tag => dispatch(actions.detail.removeTag(tag)),
   })
 )(Detail)
 
