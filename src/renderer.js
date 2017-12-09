@@ -1,9 +1,9 @@
+import 'babel-polyfill'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 import App from './components/App'
 import { remote } from 'electron'
-import { Redirect } from 'react-router-dom'
 
 const render = (Component, callback) => {
   ReactDOM.render(

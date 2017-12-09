@@ -17,6 +17,7 @@ const styles = {
     'background-color': '#dadada',
     'border-radius': '4px',
     height: 32,
+    animation: 'fadein 100ms',
     margin: {
       top: 8,
       bottom: 8
@@ -47,15 +48,37 @@ const { classes } = jss.createStyleSheet(styles).attach()
 export default class TagBar extends React.Component {
   constructor (props){
     super(props)
+
+    this.state = {
+      hidden: false
+    }
+  }
+  
+  handleClick (){
+    if (this.state.hidden || this.hidden) return
+    this.setState({ hidden: true })
+    this.hidden = true
+
+    let { tag, onRemove } = this.props
+    setTimeout(() => onRemove(tag), 100)
   }
 
   render (){
-    let tag = this.props.tag
+    let { tag } = this.props
+    let { hidden } = this.state
+
+    let style = {}
+    if (hidden){
+      style = { 
+        opacity: 0,
+        animation: 'fadeout 100ms',
+      }
+    }
 
     return (
-      <div className={classes.bar} >
+      <div className={classes.bar} style={style} >
         <p>{tag}</p>
-        <button onClick={() => this.props.onRemove(tag)}><MdClear /></button>
+        <button onClick={() => this.handleClick()}><MdClear /></button>
       </div>
     )
   }
@@ -63,10 +86,12 @@ export default class TagBar extends React.Component {
 
 TagBar.defaultProps = {
   tag: 'default',
+  show: true,
   onRemove: _.noop,
 }
 
 TagBar.propTypes = {
   tag: PropTypes.string,
+  show: PropTypes.bool,
   onRemove: PropTypes.func,
 }
