@@ -1,5 +1,7 @@
 import React from 'react'
 import classname from 'classname'
+import { connect } from 'react-redux'
+import { actions } from '../actions'
 import { Transition } from 'react-transition-group'
 import PropTypes from 'prop-types'
 import ThumbnailList from './ThumbnailList'
@@ -11,31 +13,48 @@ jss.setup(preset())
 
 const styles = {
   search: {
-    margin: {
-      top: 20,
-      bottom: 20
-    }
+    margin: '20px auto',
+    width: 1280
   }
 }
 
 const { classes } = jss.createStyleSheet(styles).attach()
 
-// DEBUG: 
-const imgs = _.range(32).map((val) => ({ id: val }))
-
-export default class Search extends React.Component {
+class Search extends React.Component {
   constructor (props){
     super(props)
   }
 
   render (){
+    let { imgs, update, words } = this.props
+
     return (
       <Page path="/search">
         <div className={classes.search}>
-          <SearchBar />
+          <SearchBar onUpdate={update} words={words} />
           <ThumbnailList line={3} imgs={imgs} />
         </div>
       </Page>
     )
   }
 }
+
+Search.propTypes = {
+  update: PropTypes.func.isRequired,
+  imgs: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number
+  })).isRequired
+}
+
+const ConnectedSearch = connect(
+  state => state.search,
+  dispatch => ({
+    update: imgs => dispatch(actions.search.update(imgs))
+  })
+)(Search)
+
+export default () => (
+  <Page path="/search">
+    <ConnectedSearch />
+  </Page>
+)

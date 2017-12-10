@@ -15,7 +15,7 @@ const styles = {
     display: 'grid',
     'grid-template-columns': 'repeat(8, 160px)',
     'justify-items': 'center',
-    'align-items': 'center'
+    'align-items': 'center',
   },
   nav: {
     display: 'grid',
@@ -54,37 +54,81 @@ export default class ThumbnailList extends React.Component {
     super(props)
 
     this.state = { 
-      curPage: 0
+      curPage: 0,
+      imgs: props.imgs,
+      animState: 'enter'
     }
 
-    this.numPerPage = props.line * 8
-    this.isPaged = this.numPerPage < props.imgs.length
+    setTimeout(() => this.setState({ animState: 'none' }), 200)
+  }
+
+  componentWillReceiveProps (nextProps){
+    this.setState({ animState: 'leave' })
+
+    setTimeout(() => this.setState({ 
+      animState: 'enter',
+      imgs: nextProps.imgs,
+      curPage: 0
+    }), 200)
+  }
+
+  animStyle (){
+    let animState = this.state.animState
+
+    let enterStyle = {
+      animation: 'fadein 200ms',
+    }
+
+    let leaveStyle = {
+      animation: 'fadeout 200ms',
+      opacity: 0
+    }
+
+    let style = {}
+    if (animState === 'enter'){
+      style = enterStyle
+    }
+    else if (animState === 'leave') {
+      style = leaveStyle
+    }
+
+    return style
   }
 
   render (){
+    let imgs = this.state.imgs
     let curPage = this.state.curPage
-    let numPerPage = this.numPerPage
-    let imgs = this.props.imgs
-    let line = this.props.line
 
+    let line = this.props.line
+    let numPerPage = line * 8
+    let isPaged = numPerPage < imgs.length
+
+    // _.chunk returns null provided empty array
+    if (imgs.length === 0){
+      return (<div/>)
+    }
+ 
+    let numPage = _.chunk(imgs, numPerPage).length
     let renderImgs = _.chunk(imgs, numPerPage)[curPage]
 
     let style = {
       gridTemplateRows: `repeat(${line}, 160px)`
     }
 
+    let animStyle = this.animStyle()
+
     return (
-      <div>
+      <div style={animStyle}>
         <div className={classes.list} style={style}>
           {renderImgs.map((val) => (
             <Thumbnail key={val.id} id={val.id} archive={val.archive} />
           ))}
         </div>
         {
-          this.isPaged && (
+          isPaged && (
             <div className={classes.nav} >
               <button><MdKeyboardArrowLeft /></button>
-              <span>1/9</span>
+              <span>{curPage} / {numPage}</span>
               <button><MdKeyboardArrowRight /></button>
             </div>
           )

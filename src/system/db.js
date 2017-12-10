@@ -3,6 +3,7 @@ import sqlstr from 'sqlstring'
 import _ from 'lodash'
 import { format } from 'util'
 import moment from 'moment'
+import { rpc } from '../utils'
 
 import { DB_PATH } from '../../app.config.json'
 
@@ -82,8 +83,18 @@ const db = {
       .join(' AND ')
 
     let query = `${SEARCH_QUERY} ${condition}`
+    
+    try {
+      let imgs = sqlite.prepare(query).all()
 
-    return sqlite.prepare(query).all()
+      return {
+        imgs,
+        success: true
+      }
+    }
+    catch (e){
+      return { success: false, error: e.stack }
+    }
   },
 
   insert ({ width, height, tags = '' }){
@@ -142,4 +153,20 @@ const db = {
   }
 }
 
-export default db
+const wrapper = {
+  enter (){
+    rpc.listen('db-max-id', () => db.maxId())
+    rpc.listen('db-size', () => db.size())
+    rpc.listen('db-random', (size) => db.random(size))
+    rpc.listen('db-search', (words) => db.search(words))
+    rpc.listen('db-insert', (vals) => db.insert(vals))
+    rpc.listen('db-update-tags', ({ id, tags }) => db.updateTags(id, tags))
+    rpc.listen('db-get-img', (id) => db.getImg(id))
+  },
+
+  leave (){
+
+  }
+}
+
+export default wrapper

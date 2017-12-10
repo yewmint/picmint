@@ -1,4 +1,5 @@
 import { handleActions, createActions } from 'redux-actions'
+import { rpc } from '../utils'
 import _ from 'lodash'
 import Immutable from 'immutable'
 
@@ -29,11 +30,13 @@ export const reducer = handleActions({
 
     REMOVE_TAG: (state, { payload: { tag } }) => {
       let tags = _.without(state.img.tags.split(/\s+/), tag).join(' ')
+      rpc.call('db-update-tags', ({ id: state.img.id, tags}))
       return Immutable.fromJS(state).setIn(['img', 'tags'], tags).toJS()
     },
     
     NEW_TAG: (state, { payload: { tag } }) => {
       let tags = _.uniq(_.concat(state.img.tags.split(/\s+/), tag)).join(' ')
+      rpc.call('db-update-tags', ({ id: state.img.id, tags}))
       return Immutable.fromJS(state).setIn(['img', 'tags'], tags).toJS()
     }
   }

@@ -17,22 +17,33 @@ const styles = {
     '-webkit-app-region': 'no-drag',
     'background-color': 'transparent',
     cursor: 'pointer',
-    'transition': 'background-color 100ms',
+    'transition': 'background-color 100ms, color 100ms',
     '&:hover': {
       'background-color': '#aaa',
       'transition': 'background-color 100ms'
     },
-    '& a': {
+    '& *': {
       display: 'inline-block',
       'line-height': '32px',
       color: '#212529;',
       width: '100%'
     },
-    '& a:hover': {
+    '& *:hover': {
+      color: '#212529;',
       'text-decoration': 'none'
     },
     '&.active': {
       'background-color': '#aaa'
+    },
+    '&.disabled': {
+      '& *': {
+        cursor: 'default',
+        color: '#888',
+      },
+      'background-color': 'transparent',
+      '&:hover': {
+        'background-color': 'transparent',
+      },
     }
   }
 }
@@ -45,16 +56,22 @@ export default class RouterButton extends React.Component {
   }
 
   render (){
-    let to = this.props.to
+    let { to, disabled } = this.props
 
-    let style = ''
-    if (to === location.pathname){
-      style = 'active'
+    let styles = {
+      active: to === location.pathname,
+      disabled
     }
 
     return (
-      <div className={classname(classes.btn, style)}>
-        <Link to={to}>{this.props.children}</Link>
+      <div 
+        className={classname(classes.btn, styles)}
+      >
+        {disabled ? (
+          <span>{this.props.children}</span>
+        ) : (
+          <Link to={to}>{this.props.children}</Link>
+        )}
       </div>
     )
   }
@@ -62,8 +79,10 @@ export default class RouterButton extends React.Component {
 
 RouterButton.defaultProps = {
   to: '/',
+  disabled: false
 }
 
 RouterButton.propTypes = {
-  to: PropTypes.string
+  to: PropTypes.string,
+  disabled: PropTypes.bool
 }

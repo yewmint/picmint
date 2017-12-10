@@ -2,7 +2,7 @@ import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { format } from 'url'
 import { join } from 'path'
 import { exec } from 'child_process'
-import './db'
+import { manager } from './system'
 //import './server'
 
 import settings from '../app.config.json'
@@ -53,11 +53,14 @@ function createWindow () {
     let imgPath = join(app.getAppPath(), 'dist', url)
     exec(`start ${imgPath}`)
   })
+
+  manager.enter()
 }
 
 app.on('ready', createWindow)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    manager.leave()
     app.quit()
   }
 })

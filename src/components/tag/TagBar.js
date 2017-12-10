@@ -17,9 +17,9 @@ const styles = {
     'background-color': '#dadada',
     'border-radius': '4px',
     height: 32,
-    animation: 'fadein 100ms',
+    animation: 'list-fadein 100ms',
     margin: {
-      top: 8,
+      top: 0,
       bottom: 8
     },
     '&>p': {
@@ -71,7 +71,7 @@ export default class TagBar extends React.Component {
     if (hidden){
       style = { 
         opacity: 0,
-        animation: 'fadeout 100ms',
+        animation: 'list-fadeout 100ms',
       }
     }
 

@@ -63,6 +63,38 @@ img {
   }
 }
 
+@keyframes list-fadein {
+  from {
+    opacity: 0;
+    height: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  to {
+    opacity: 1;
+    height: 32;
+    margin-bottom: 8;
+    padding: 4;
+  }
+}
+
+@keyframes list-fadeout {
+  from {
+    opacity: 1;
+    height: 32;
+    margin-bottom: 8;
+    padding: 4;
+  }
+
+  to {
+    opacity: 0;
+    height: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+}
+
 @keyframes slidein {
   from {
     opacity: 0;
@@ -84,5 +116,15 @@ img {
   to {
     opacity: 0;
     transform: translateX(-16px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg)
+  }
+
+  to {
+    transform: rotate(360deg)
   }
 }
