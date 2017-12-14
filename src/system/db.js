@@ -22,9 +22,14 @@ CREATE TABLE IF NOT EXISTS images (
   width INT,
   height INT,
   date TEXT,
-  tags TEXT
+  tags TEXT,
+  fingerprint TEXT
 )
 `).run()
+
+const ALL_QUERY = `
+SELECT * FROM images
+`
 
 const MAX_ID_QUERY = `
 SELECT MAX(id) maxId FROM images LIMIT 1
@@ -43,7 +48,7 @@ SELECT * FROM images WHERE
 `
 
 const INSERT_QUERY = `
-INSERT INTO images VALUES(?, ?, ?, ?, ?, ?)
+INSERT INTO images VALUES(?, ?, ?, ?, ?, ?, ?)
 `
 
 const UPDATE_QUERY = `
@@ -54,7 +59,11 @@ const GET_QUERY = `
 SELECT * FROM images WHERE id = %d LIMIT 1
 `
 
-const db = {
+export const db = {
+  all (){
+    return sqlite.prepare(ALL_QUERY).all()
+  },
+
   maxId (){
     // get() returns null if table is empty
     return sqlite.prepare(MAX_ID_QUERY).get()['maxId'] || 0
@@ -97,14 +106,14 @@ const db = {
     }
   },
 
-  insert ({ width, height, tags = '' }){
+  insert ({ width, height, tags = 'new-img', fringerprint = '' }){
     let id = this.maxId() + 1
     let archive = _.ceil((this.size() + 1) / NUM_PER_ARCHIVE)
     let date = moment().format('MMM D, YYYY')
 
     try {
       let info = sqlite.prepare(INSERT_QUERY).run(
-        id, archive, width, height, date, tags
+        id, archive, width, height, date, tags, fringerprint
       )
 
       return {

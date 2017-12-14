@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { ipcRenderer, ipcMain } from 'electron'
+import { ipcRenderer, ipcMain, webContents } from 'electron'
 
 let ipc = { on: _.noop, sendSync: _.noop }
 if (process.type === 'browser'){
@@ -21,7 +21,19 @@ function call (eventName = 'default', args = {}){
   return ipc.sendSync(eventName, args) || null
 }
 
+function callAsync (eventName = 'default', args = {}){
+  eventName = 'rpc-' + eventName
+  ipc.send(eventName, args)
+}
+
+function mainCallAsync (eventName = 'default', args = {}){
+  eventName = 'rpc-' + eventName
+  webContents.getAllWebContents()[0].send(eventName, args)
+}
+
 export const rpc = {
   listen,
-  call
+  call,
+  callAsync,
+  mainCallAsync
 }

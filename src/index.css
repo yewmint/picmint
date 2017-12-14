@@ -39,6 +39,14 @@ img {
   animation-timing-function: ease-out;
 }
 
+.fadein {
+  animation: fadein 100ms;
+}
+
+.fadeout {
+  animation: fadeout 100ms;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;

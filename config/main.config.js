@@ -1,5 +1,6 @@
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
+const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 
 module.exports = {
   entry: './src/main.js',
@@ -34,9 +35,15 @@ module.exports = {
   },
 
   plugins: [
-    // new webpack.optimize.UglifyJsPlugin({
-    //   sourceMap: true,
-    //   comments: false
-    // })
+    new MakeDirWebpackPlugin({
+      dirs: [
+        { path: './dist/store' },
+        { path: './dist/store/pics' },
+        { path: './dist/store/thumbs' },
+        { path: './dist/store/tmp' },
+        { path: './dist/store/tmp/pics' },
+        { path: './dist/store/tmp/thumbs' },
+      ]
+    })
   ]
-};
+}

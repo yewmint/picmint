@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "lint": "eslint src",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist/*",
     "rebuild": "yarn run clean && yarn run build",
     "build": "yarn run lint && yarn run build:main && yarn run build:renderer",
     "build:main": "cross-env NODE_ENV=production webpack -p --config config/main.config.js",
@@ -44,6 +44,7 @@
     "electron-rebuild": "^1.6.0",
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
+    "make-dir-webpack-plugin": "^0.1.0",
     "node-gyp": "^3.6.2",
     "react-hot-loader": "^3.0.0-beta.6",
     "rimraf": "^2.6.0",
@@ -52,6 +53,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
+    "animejs": "^2.2.0",
     "babel-eslint": "^7.1.1",
     "babel-polyfill": "^6.26.0",
     "babel-preset-stage-2": "^6.24.1",
@@ -80,6 +82,7 @@
     "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+    "sharp": "^0.18.4",
     "sqlstring": "^2.3.0"
   }
 }

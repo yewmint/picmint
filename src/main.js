@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { format } from 'url'
 import { join } from 'path'

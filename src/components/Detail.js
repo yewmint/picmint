@@ -49,7 +49,7 @@ class Detail extends React.Component {
 
   render (){
     let img = this.props.img
-    let src = `/store/imgs/${img.archive}/${img.id}.jpg`
+    let src = `/store/pics/${img.archive}/${img.id}.jpg`
 
     return (
       <div className={classes.detail}>
