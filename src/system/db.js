@@ -106,14 +106,14 @@ export const db = {
     }
   },
 
-  insert ({ width, height, tags = 'new-img', fringerprint = '' }){
+  insert ({ width, height, tags = 'new-img', fingerprint = '' }){
     let id = this.maxId() + 1
     let archive = _.ceil((this.size() + 1) / NUM_PER_ARCHIVE)
     let date = moment().format('MMM D, YYYY')
 
     try {
       let info = sqlite.prepare(INSERT_QUERY).run(
-        id, archive, width, height, date, tags, fringerprint
+        id, archive, width, height, date, tags, fingerprint
       )
 
       return {
