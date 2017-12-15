@@ -33,7 +33,10 @@ const styles = {
       'text-decoration': 'none'
     },
     '&.active': {
-      'background-color': '#aaa'
+      'background-color': '#1fb37c',
+      '& *': {
+        color: '#fff'
+      }
     },
     '&.disabled': {
       '& *': {

@@ -1,7 +1,7 @@
 import copy from './copy'
 import process from './process'
 import { db } from '../db'
-import { resolve } from 'path'
+import { resolve, basename } from 'path'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import _ from 'lodash'
 import { rpc } from '../../utils'
@@ -58,6 +58,8 @@ const importer = {
 
     // search for duplicates
     newImgs.forEach(nimg => {
+      nimg.tmpId = Number.parseInt(basename(nimg.path, '.jpg'))      
+
       let dupImg = _.find(
         imgs, 
         ({ fingerprint }) => distance(fingerprint, nimg.fingerprint) < THRESHOLD
@@ -89,7 +91,7 @@ const importer = {
     })
 
     _.forOwn(dups, (dupImgs, fp) => {
-      console.log(fp, dupImgs)
+      
     })
 
     rpc.mainCallAsync('duplicate-setup', dups)

@@ -3,19 +3,19 @@ import { connect } from 'react-redux'
 import { actions } from '../actions'
 import classname from 'classname'
 import PropTypes from 'prop-types'
+import DupGroup from './DupGroup'
 import _ from 'lodash'
 import Page from './Page'
-import ThumbnailList from './ThumbnailList'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 jss.setup(preset())
 
 const styles = {
   duplicate: {
-    margin: {
-      top: 20,
-      bottom: 20
-    }
+    width: 1280,
+    height: 680,
+    padding: '10px 0',
+    'overflow-y': 'auto',
   }
 }
 
@@ -32,11 +32,14 @@ class Duplicate extends React.Component {
 
   render (){
     let dups = this.props.dups
-    console.log(dups)
 
     return (
-      <div className={classes.feature}>
-        {dups}
+      <div className={classes.duplicate}>
+        {
+          _.toPairs(dups).map(([fp, group]) => (
+            <DupGroup key={fp} imgs={group} fingerprint={fp} />
+          ))
+        }
       </div>
     )
   }

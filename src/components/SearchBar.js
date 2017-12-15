@@ -30,7 +30,7 @@ const styles = {
       }
     },
     '&>button': {
-      background: '#00877d',
+      background: '#1fb37c',
       border: 'none',
       width: 32,
       height: 32,
@@ -44,11 +44,11 @@ const styles = {
       },
       '&:hover': {
         transition: 'background-color 100ms',
-        background: color('#00877d').lighten(0.3).rgb().string(),
+        background: color('#1fb37c').lighten(0.3).rgb().string(),
       },
       '&:active': {
         transition: 'background-color 100ms',
-        background: color('#00877d').darken(0.3).rgb().string(),
+        background: color('#1fb37c').darken(0.3).rgb().string(),
       }
     }
   }

@@ -106,7 +106,7 @@ export const db = {
     }
   },
 
-  insert ({ width, height, tags = 'new-img', fingerprint = '' }){
+  insert ({ width, height, tags = 'new-img', fingerprint }){
     let id = this.maxId() + 1
     let archive = _.ceil((this.size() + 1) / NUM_PER_ARCHIVE)
     let date = moment().format('MMM D, YYYY')
