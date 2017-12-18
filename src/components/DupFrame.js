@@ -25,16 +25,28 @@ const styles = {
 const { classes } = jss.createStyleSheet(styles).attach()
 
 export default class DupFrame extends React.Component{
+  static defaultProps = {
+    chosens: [],
+    onChoose: _.noop
+  }
+
   static propTypes = {
-    src: PropTypes.string.isRequired,
+    img: PropTypes.object.isRequired,
+    chosens: PropTypes.array,
+    onChoose: PropTypes.func
   }
   
   constructor (props){
     super(props)
   }
 
+  handleChoose (){
+    let { img, onChoose } = this.props
+    onChoose(img)
+  }
+
   render (){
-    let { img } = this.props
+    let { img, chosens } = this.props
     let { archive, id, tmpId, width, height } = img
     let src = ''
 
@@ -45,9 +57,15 @@ export default class DupFrame extends React.Component{
       src = `/store/tmp/pics/${tmpId}.jpg`
     }
 
+    let active = _.findIndex(chosens, ({ uid }) => uid === img.uid) !== -1
+
     return (
       <div className={classes.frame}>
-        <DupThumbnail src={src} />
+        <DupThumbnail 
+          src={src} 
+          active={active} 
+          onChoose={() => this.handleChoose()} 
+        />
         <p className={classes.icon} >
           {`${width} x ${height}`}
         </p>

@@ -1,5 +1,6 @@
 import copy from './copy'
 import process from './process'
+import rimraf from 'rimraf'
 import { db } from '../db'
 import { resolve, basename } from 'path'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
@@ -7,6 +8,10 @@ import _ from 'lodash'
 import { rpc } from '../../utils'
 
 const THRESHOLD = 1
+
+const tmpPath = resolve('./dist/store/tmp')
+const picPath = resolve('./dist/store/tmp/pics')
+const thbPath = resolve('./dist/store/tmp/thumbs')
 
 function distance (fpa, fpb){
   let binStrA = _.padStart(Number.parseInt(fpa, 16).toString(2), 64, '0')
@@ -38,19 +43,14 @@ function moveImg (id, archive, img){
 
 const importer = {
   async importImages (path){
-    let tmpPath = resolve('./dist/store/tmp')
     if (!existsSync(tmpPath)) mkdirSync(tmpPath)
-
-    let picPath = resolve('./dist/store/tmp/pics')
     if (!existsSync(picPath)) mkdirSync(picPath)
-
-    let thbPath = resolve('./dist/store/tmp/thumbs')
     if (!existsSync(thbPath)) mkdirSync(thbPath)
 
     // copy all images into picPath
     copy(path, picPath)
 
-    // create thumbnails and extract metas fomr images in tmpPath/pics
+    // create thumbnails and extract metas from images in tmpPath/pics
     let newImgs = await process(tmpPath)
 
     let imgs = [ ...db.all() ]
@@ -74,7 +74,12 @@ const importer = {
           // flag to filter first duplicate out of imgs
           // cuz first duplicate will enter imgs being undetcted
           dupImg.dup = true
+
+          // uid used to classify each img in duplicates
+          dupImg.uid = `old/${dupImg.id}`
         }
+
+        nimg.uid = `new/${nimg.id}`
         dups[dupImg.fingerprint].push(nimg)
       }
       else {
@@ -90,11 +95,28 @@ const importer = {
       }
     })
 
-    _.forOwn(dups, (dupImgs, fp) => {
-      
+    rpc.mainCallAsync('duplicate-setup', dups)
+  },
+
+  handleChoose (chosens, dups) {
+    _.forOwn(dups, (imgs, fp) => {
+      let head = imgs[0]
+      if (_.has(head, 'archive') && _.indexOf(chosens, head) === -1){
+        // head image is old and not chosen
+        db.remove(head.id)
+        , {encoding: 'utf-8'}}
     })
 
-    rpc.mainCallAsync('duplicate-setup', dups)
+    chosens.forEach(chosen => {
+      if (!_.has(chosen, 'archive')){
+        // chosen image is new
+        db.insert(chosen)
+      }
+    })
+  },
+
+  handleCancel () {
+    rimraf(tmpPath)
   }
 }
 
@@ -103,10 +125,20 @@ const wrapper = {
     rpc.listen('importer-import', (path) => {
       importer.importImages(path)
     })
+
+    rpc.listen('importer-choose', ({ chosens, dups }) => {
+      importer.handleChoose(chosens, dups)
+    })
+
+    rpc.listen('importer-cancel', () => {
+      importer.handleCancel()
+    })
+
+    rimraf(tmpPath)
   },
 
   leave (){
-
+    rimraf(tmpPath)
   }
 }
 

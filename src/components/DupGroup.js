@@ -46,12 +46,16 @@ const { classes } = jss.createStyleSheet(styles).attach()
 export default class DupGroup extends React.Component{
   static defaultProps = {
     fingerprint: 'none',
-    imgs: []
+    imgs: [],
+    chosens: [],
+    onChoose: _.noop
   }
   
   static propTypes = {
     fingerprint: PropTypes.string,
     imgs: PropTypes.array,
+    chosens: PropTypes.array,
+    onChoose: PropTypes.func
   }
   
   constructor (props){
@@ -59,10 +63,15 @@ export default class DupGroup extends React.Component{
   }
 
   renderImgs (){
-    let { imgs } = this.props
+    let { imgs, chosens, onChoose } = this.props
 
     return imgs.map((img, idx) => (
-      <DupFrame key={idx} img={img} />
+      <DupFrame 
+        key={idx} 
+        img={img} 
+        chosens={chosens} 
+        onChoose={onChoose} 
+      />
     ))
   }
 

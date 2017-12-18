@@ -1,82 +1,41 @@
-import DB from 'better-sqlite3'
-import sqlstr from 'sqlstring'
 import _ from 'lodash'
 import { format } from 'util'
 import moment from 'moment'
 import { rpc } from '../utils'
-
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { DB_PATH } from '../../app.config.json'
 
 const NUM_PER_ARCHIVE = 100
 
-const sqlite = new DB(DB_PATH)
+let dbData = []
+if (existsSync(DB_PATH)){
+  let content = readFileSync(DB_PATH, {encoding: 'utf-8'})
+  dbData = _.concat([], JSON.parse(content))
+}
 
-sqlite.prepare(`
-PRAGMA encoding = "UTF-8"
-`).run()
-
-sqlite.prepare(`
-CREATE TABLE IF NOT EXISTS images (
-  id INT ROWID NOT NULL,
-  archive INT,
-  width INT,
-  height INT,
-  date TEXT,
-  tags TEXT,
-  fingerprint TEXT
-)
-`).run()
-
-const ALL_QUERY = `
-SELECT * FROM images
-`
-
-const MAX_ID_QUERY = `
-SELECT MAX(id) maxId FROM images LIMIT 1
-`
-
-const SIZE_QUERY = `
-SELECT COUNT(id) size FROM images
-`
-
-const RAND_QUERY = `
-SELECT * FROM images ORDER BY RANDOM() LIMIT 
-`
-
-const SEARCH_QUERY = `
-SELECT * FROM images WHERE
-`
-
-const INSERT_QUERY = `
-INSERT INTO images VALUES(?, ?, ?, ?, ?, ?, ?)
-`
-
-const UPDATE_QUERY = `
-UPDATE images SET tags = %s WHERE id = %s
-`
-
-const GET_QUERY = `
-SELECT * FROM images WHERE id = %d LIMIT 1
-`
+function syncDB (){
+  dbData = _.sortBy(dbData, 'id')
+  let content = JSON.stringify(dbData)
+  writeFileSync(DB_PATH, content, {encoding: 'utf-8'})
+}
 
 export const db = {
   all (){
-    return sqlite.prepare(ALL_QUERY).all()
+    return dbData
   },
 
   maxId (){
-    // get() returns null if table is empty
-    return sqlite.prepare(MAX_ID_QUERY).get()['maxId'] || 0
+    // _.max return 0 provided empty array
+    return _.max(_.map(dbData, 'id')) || 0
   },
 
   size (){
-    return sqlite.prepare(SIZE_QUERY).get()['size']
+    return dbData.length
   },
 
   random (size = 32){
     if (_.isNumber(size) && size > 0){
-      let query = `${RAND_QUERY} ${size}`
-      return sqlite.prepare(query).all()
+      return _.take(_.shuffle(dbData), size)
     }
     else {
       return []
@@ -85,41 +44,37 @@ export const db = {
 
   search (words = ''){
     if (!_.isString(words)) return []
+    words = words.split('\s+')
 
-    let condition = words
-      .split(/\s+/)
-      .map(word => `INSTR(tags, ${sqlstr.escape(word)}) <> 0`)
-      .join(' AND ')
-
-    let query = `${SEARCH_QUERY} ${condition}`
-    
-    try {
-      let imgs = sqlite.prepare(query).all()
-
-      return {
-        imgs,
-        success: true
-      }
-    }
-    catch (e){
-      return { success: false, error: e.stack }
-    }
+    return _.filter(dbData, ({ tags }) => {
+      let contains = words.map(word => _.includes(tags, word))
+      return contains.reduce((pre, cur) => pre && cur, true)
+    })
   },
 
-  insert ({ width, height, tags = 'new-img', fingerprint }){
+  insert ({ width, height, tags = 'new', fingerprint }){
     let id = this.maxId() + 1
     let archive = _.ceil((this.size() + 1) / NUM_PER_ARCHIVE)
     let date = moment().format('MMM D, YYYY')
 
+    dbData = _.concat(dbData, {
+      id, archive, width, height, date, tags, fingerprint
+    })
+
+    syncDB()
+
+    return { id, archive }
+  },
+
+  remove (id) { 
+    let query = format(REMOVE_QUERY, id)  
+
     try {
-      let info = sqlite.prepare(INSERT_QUERY).run(
-        id, archive, width, height, date, tags, fingerprint
-      )
+      let info = sqlite.prepare(query).run()
 
       return {
-        id,
-        archive,
-        success: info.changes === 1
+        success: info.changes === 1,
+        error: 'affects 0 rows'
       }
     }
     catch (e){

@@ -1,6 +1,7 @@
 import React from 'react'
 import jss from 'jss'
 import PropTypes from 'prop-types'
+import classname from 'classname'
 import Image from './Image'
 import { MdDone } from 'react-icons/lib/md'
 import { Link } from 'react-router-dom'
@@ -34,9 +35,12 @@ const styles = {
     padding: 32,
     color: '#48dc7e',
     background: 'rgba(0, 0, 0, 0.5)',
+    opacity: 0,
+    transition: 'opacity 200ms',
 
     '& active': {
-      opacity: 1
+      opacity: 1,
+      transition: 'opacity 200ms',
     }
   }
 }
@@ -46,6 +50,8 @@ const { classes } = jss.createStyleSheet(styles).attach()
 export default class DupThumbnail extends React.Component{
   static propTypes = {
     src: PropTypes.string.isRequired,
+    active: PropTypes.bool.isRequired,
+    onChoose: PropTypes.func.isRequired
   }
   
   constructor (props){
@@ -53,15 +59,21 @@ export default class DupThumbnail extends React.Component{
   }
 
   render (){
-    let { src } = this.props
+    let { src, active, onChoose } = this.props
 
     let style = {
       backgroundImage: `url(${src})`
     }
 
+    let iconCls = classname(classes.icon, { active })
+
     return (
-      <div className={classes.thumbnail} style={style} >
-        <div className={classes.icon} >
+      <div 
+        className={classes.thumbnail} 
+        style={style} 
+        onClick={onChoose}
+      >
+        <div className={iconCls} >
           <MdDone size={64} />
         </div>
       </div>
