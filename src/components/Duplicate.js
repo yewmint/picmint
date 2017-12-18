@@ -18,6 +18,37 @@ const styles = {
     height: 680,
     padding: '10px 0',
     'overflow-y': 'auto',
+  },
+
+  button: {
+    height: 32,
+    margin: {
+      left: 20,
+    },
+    padding: {
+      left: 16,
+      right: 16
+    },
+    'text-align': 'center',
+    '-webkit-app-region': 'no-drag',
+    'background-color': '#cccccc',
+    border: 'none',
+    cursor: 'pointer',
+    'transition': 'background-color 100ms, color 100ms',
+    '&:hover': {
+      'background-color': '#aaa',
+      'transition': 'background-color 100ms'
+    },
+  },
+
+  confirm: {
+    'background-color': '#1fb37c',
+    color: 'white',
+    'transition': 'background-color 100ms, color 100ms',
+    '&:hover': {
+      'background-color': '#24966c',
+      'transition': 'background-color 100ms, color 100ms',
+    }
   }
 }
 
@@ -32,7 +63,8 @@ rpc.listen('duplicate-finish', () => {
 
 class Duplicate extends React.Component {
   static propTypes = {
-    dups: PropTypes.object.isRequired
+    dups: PropTypes.object.isRequired,
+    chosens: PropTypes.array.isRequired,  
   }
 
   constructor (props){
@@ -43,47 +75,44 @@ class Duplicate extends React.Component {
   }
 
   handleConfirm (){
-    let { dups } = this.props
-    let { chosens } = this.state
+    let { dups, chosens } = this.props
 
-    rpc.sendAsync('importer-choose', { dups, chosens })
+    rpc.callAsync('importer-choose', { dups, chosens })
   }
 
   handleCancel (){
-    rpc.sendAsync('importer-cancel')
+    rpc.callAsync('importer-cancel')
   }
 
   handleFinish (){
     this.setState({ state: 'finished' })
   }
 
-  handleChoose (img){
-    let { chosens } = this.state
-
-    let idx = _.findIndex(chosens, ({ uid }) => uid === img.uid) 
-    if (idx === -1){
-      this.setState(({ chosens }) => ({ chosens: _.concat(chosens, img) }))
-    }
-    else {
-      this.setState(({ chosens }) => ({ chosens: _.without(chosens, img) }))
-    }
-  }
-
   render (){
     let { dups } = this.props
-    let { chosens, state } = this.state
+    let { state } = this.state
 
-    if (state === 'finished'){
+    if (state === 'finished' || _.keys(dups).length === 0){
       return (
-        <Redirect to="/feature" />
+        <Redirect to="/search" />
       )
     }
 
     return (
       <div className={classes.duplicate}>
         <div>
-          <button onClick={() => this.handleConfirm()} >Confirm</button>
-          <button onClick={() => this.handleCancel()} >Cancel</button>
+          <button 
+            className={classname(classes.button, classes.confirm)} 
+            onClick={() => this.handleConfirm()} 
+          >
+            Confirm
+          </button>
+          <button 
+            className={classes.button} 
+            onClick={() => this.handleCancel()} 
+          >
+            Cancel
+          </button>
         </div>
         {
           _.toPairs(dups).map(([fp, group]) => (
@@ -91,8 +120,6 @@ class Duplicate extends React.Component {
               key={fp} 
               imgs={group} 
               fingerprint={fp}
-              chosens={chosens} 
-              onChoose={img => this.handleChoose(img)}
             />
           ))
         }

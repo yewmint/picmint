@@ -3,6 +3,9 @@ import jss from 'jss'
 import PropTypes from 'prop-types'
 import DupThumbnail from './DupThumbnail'
 import preset from 'jss-preset-default'
+import _ from 'lodash'
+import { connect } from 'react-redux'
+import { actions } from '../actions'
 jss.setup(preset())
 
 const styles = {
@@ -24,7 +27,7 @@ const styles = {
 
 const { classes } = jss.createStyleSheet(styles).attach()
 
-export default class DupFrame extends React.Component{
+class DupFrame extends React.Component{
   static defaultProps = {
     chosens: [],
     onChoose: _.noop
@@ -40,14 +43,23 @@ export default class DupFrame extends React.Component{
     super(props)
   }
 
+  _isChosen (){
+    let { img, chosens } = this.props
+    return _.findIndex(chosens, ({ uid }) => uid === img.uid) !== -1
+  }
+
   handleChoose (){
-    let { img, onChoose } = this.props
-    onChoose(img)
+    let { img, choose, unchoose } = this.props
+    if (this._isChosen()){
+      unchoose(img)
+    }
+    else {
+      choose(img)
+    }
   }
 
   render (){
-    let { img, chosens } = this.props
-    let { archive, id, tmpId, width, height } = img
+    let { archive, id, tmpId, width, height } = this.props.img
     let src = ''
 
     if (archive){
@@ -57,7 +69,7 @@ export default class DupFrame extends React.Component{
       src = `/store/tmp/pics/${tmpId}.jpg`
     }
 
-    let active = _.findIndex(chosens, ({ uid }) => uid === img.uid) !== -1
+    let active = this._isChosen()
 
     return (
       <div className={classes.frame}>
@@ -73,3 +85,11 @@ export default class DupFrame extends React.Component{
     )
   }
 }
+
+export default connect(
+  state => state.duplicate,
+  dispatch => ({
+    choose: img => dispatch(actions.duplicate.choose(img)),
+    unchoose: img => dispatch(actions.duplicate.unchoose(img))
+  })
+)(DupFrame)

@@ -77,7 +77,7 @@ export default class SearchBar extends React.Component {
       return
     }
 
-    let { imgs } = rpc.call('db-search', this.state.value)
+    let imgs = rpc.call('db-search', this.state.value)
     
     this.props.onUpdate({
       imgs,

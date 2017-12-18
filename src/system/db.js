@@ -44,12 +44,12 @@ export const db = {
 
   search (words = ''){
     if (!_.isString(words)) return []
-    words = words.split('\s+')
+    words = words.split(/\s+/)
 
     return _.filter(dbData, ({ tags }) => {
       let contains = words.map(word => _.includes(tags, word))
       return contains.reduce((pre, cur) => pre && cur, true)
-    })
+    }) || []
   },
 
   insert ({ width, height, tags = 'new', fingerprint }){
@@ -68,17 +68,22 @@ export const db = {
   remove (id) { 
     dbData = _.filter(dbData, line => line.id !== id)
     syncDB()
+    return true
   },
 
   updateTags (id, tags = ''){
     if (!_.isNumber(id) || id <= 0 || !_.isString(tags)){
-      return
+      return false
     }
 
     let line = _.find(dbData, ['id', id])
     if (line){
       line.tags = tags
       syncDB()
+      return true
+    }
+    else {
+      return false
     }
   },
 
@@ -87,7 +92,7 @@ export const db = {
       return null
     }
 
-    return _.find(dbData, ['id', id])
+    return _.find(dbData, ['id', id]) || null
   }
 }
 

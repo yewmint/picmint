@@ -37,7 +37,7 @@ class Detail extends React.Component {
 
   _loadImg (){
     let id = Number.parseInt(this.props.id)
-    let { img } = rpc.call('db-get-img', id)
+    let img = rpc.call('db-get-img', id)
     this.props.setup(img)
   }
 

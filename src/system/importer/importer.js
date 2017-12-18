@@ -7,6 +7,21 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import _ from 'lodash'
 import { rpc } from '../../utils'
 
+function rmrf(path) {
+  if (!existsSync(path)) {
+    return
+  }
+
+  try {
+    rimraf.sync(path, { maxBusyTries: 40 })
+    return true
+  }
+  catch (e){
+    // console.error(e)
+    return false
+  }
+}
+
 const THRESHOLD = 1
 
 const tmpPath = resolve('./dist/store/tmp')
@@ -43,17 +58,19 @@ function moveImg (id, archive, img){
 
 const importer = {
   async importImages (path){
+    rmrf(tmpPath)
+
     if (!existsSync(tmpPath)) mkdirSync(tmpPath)
     if (!existsSync(picPath)) mkdirSync(picPath)
     if (!existsSync(thbPath)) mkdirSync(thbPath)
 
     // copy all images into picPath
-    copy(path, picPath)
+    let files = copy(path, picPath)
 
     // create thumbnails and extract metas from images in tmpPath/pics
-    let newImgs = await process(tmpPath)
+    let newImgs = await process(tmpPath, files)
 
-    let imgs = [ ...db.all() ]
+    let imgs = db.all()
     let dups = {}
 
     // search for duplicates
@@ -79,7 +96,7 @@ const importer = {
           dupImg.uid = `old/${dupImg.id}`
         }
 
-        nimg.uid = `new/${nimg.id}`
+        nimg.uid = `new/${nimg.tmpId}`
         dups[dupImg.fingerprint].push(nimg)
       }
       else {
@@ -87,21 +104,21 @@ const importer = {
       }
     })
 
-    // unique image does not own an id and has not been marked as dup
-    _.filter(imgs, img => !_.has(img, 'id') && !img.dup).forEach(img => {
-      let { success, id, archive } = db.insert(img)
-      if (success){
-        moveImg(id, archive, img)
-      }
+    // unique image does not own an archive and has not been marked as dup
+    _.filter(imgs, img => !_.has(img, 'archive') && !img.dup).forEach(img => {
+      let { id, archive } = db.insert(img)
+      moveImg(id, archive, img)
     })
 
     rpc.mainCallAsync('duplicate-setup', dups)
   },
 
   handleChoose (chosens, dups) {
-    _.forOwn(dups, (imgs, fp) => {
+    _.forOwn(dups, imgs => {
       let head = imgs[0]
-      if (_.has(head, 'archive') && _.indexOf(chosens, head) === -1){
+      if (_.has(head, 'archive') && 
+        _.findIndex(chosens, ({ uid }) => uid === head.uid) === -1
+      ){
         // head image is old and not chosen
         db.remove(head.id)
       }
@@ -110,13 +127,18 @@ const importer = {
     chosens.forEach(chosen => {
       if (!_.has(chosen, 'archive')){
         // chosen image is new
-        db.insert(chosen)
+        let { id, archive } = db.insert(chosen)
+        moveImg(id, archive, chosen)
       }
     })
+
+    rmrf(tmpPath)
+    rpc.mainCallAsync('duplicate-finish')
   },
 
   handleCancel () {
-    rimraf(tmpPath)
+    rmrf(tmpPath)
+    rpc.mainCallAsync('duplicate-finish')
   }
 }
 
@@ -134,11 +156,11 @@ const wrapper = {
       importer.handleCancel()
     })
 
-    rimraf(tmpPath)
+    rmrf(tmpPath)
   },
 
   leave (){
-    rimraf(tmpPath)
+    rmrf(tmpPath)
   }
 }
 

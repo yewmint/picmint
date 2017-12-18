@@ -1,8 +1,10 @@
 import sharp from 'sharp'
 import { basename, extname } from 'path'
 import _ from 'lodash'
-import { readdirSync, existsSync, mkdirSync } from 'fs'
+import { existsSync, mkdirSync } from 'fs'
 import { resolve } from 'path'
+
+sharp.cache(false)
 
 async function getFingerprint (path) {
   let data
@@ -70,20 +72,22 @@ async function createThumbnail (from, to){
   }
 }
 
-async function process(dirPath){
-  let picDirPath = resolve(dirPath, 'pics')
+async function process(dirPath, files){
+  // let picDirPath = resolve(dirPath, 'pics')
   let thbDirPath = resolve(dirPath, 'thumbs')
   if (!existsSync(thbDirPath)){
     mkdirSync(thbDirPath)
   }
 
-  let imgPaths = []
-  readdirSync(picDirPath).forEach(subName => {
-    let subPath = resolve(picDirPath, subName)
-    if (_.endsWith(subPath, '.png') || _.endsWith(subPath, '.jpg')){
-      imgPaths = _.concat(imgPaths, subPath)
-    }
-  })
+  // let imgPaths = []
+  // readdirSync(picDirPath).forEach(subName => {
+  //   let subPath = resolve(picDirPath, subName)
+  //   if (_.endsWith(subPath, '.png') || _.endsWith(subPath, '.jpg')){
+  //     imgPaths = _.concat(imgPaths, subPath)
+  //   }
+  // })
+
+  let imgPaths = files
   
   let imgs = []
   await Promise.all(imgPaths.map(async path => {

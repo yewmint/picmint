@@ -38,7 +38,7 @@ const styles = {
     opacity: 0,
     transition: 'opacity 200ms',
 
-    '& active': {
+    '&.active': {
       opacity: 1,
       transition: 'opacity 200ms',
     }

@@ -47,15 +47,11 @@ export default class DupGroup extends React.Component{
   static defaultProps = {
     fingerprint: 'none',
     imgs: [],
-    chosens: [],
-    onChoose: _.noop
   }
   
   static propTypes = {
     fingerprint: PropTypes.string,
     imgs: PropTypes.array,
-    chosens: PropTypes.array,
-    onChoose: PropTypes.func
   }
   
   constructor (props){
@@ -68,9 +64,7 @@ export default class DupGroup extends React.Component{
     return imgs.map((img, idx) => (
       <DupFrame 
         key={idx} 
-        img={img} 
-        chosens={chosens} 
-        onChoose={onChoose} 
+        img={img}
       />
     ))
   }
