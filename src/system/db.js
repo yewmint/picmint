@@ -62,58 +62,32 @@ export const db = {
     })
 
     syncDB()
-
     return { id, archive }
   },
 
   remove (id) { 
-    let query = format(REMOVE_QUERY, id)  
-
-    try {
-      let info = sqlite.prepare(query).run()
-
-      return {
-        success: info.changes === 1,
-        error: 'affects 0 rows'
-      }
-    }
-    catch (e){
-      return { success: false, error: e.stack }
-    }
+    dbData = _.filter(dbData, line => line.id !== id)
+    syncDB()
   },
 
   updateTags (id, tags = ''){
     if (!_.isNumber(id) || id <= 0 || !_.isString(tags)){
-      return { success: false }
+      return
     }
 
-    tags = sqlstr.escape(tags)
-
-    let query = format(UPDATE_QUERY, tags, id)
-
-    try {
-      let info = sqlite.prepare(query).run()
-      return { success: info.changes === 1 }
-    }
-    catch (e){
-      return { success: false, error: e.stack }
+    let line = _.find(dbData, ['id', id])
+    if (line){
+      line.tags = tags
+      syncDB()
     }
   },
 
   getImg (id){
     if (!_.isNumber(id) || id <= 0){
-      return { success: false, error: 'DB: Invalid id' }
+      return null
     }
 
-    let query = format(GET_QUERY, id)
-    
-    try {
-      let img = sqlite.prepare(query).get()
-      return { success: true, img }
-    }
-    catch (e){
-      return { success: false, error: e.stack }
-    }
+    return _.find(dbData, ['id', id])
   }
 }
 

@@ -104,7 +104,7 @@ const importer = {
       if (_.has(head, 'archive') && _.indexOf(chosens, head) === -1){
         // head image is old and not chosen
         db.remove(head.id)
-        , {encoding: 'utf-8'}}
+      }
     })
 
     chosens.forEach(chosen => {
