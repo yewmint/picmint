@@ -24,9 +24,9 @@ function rmrf(path) {
 
 const THRESHOLD = 1
 
-const tmpPath = resolve('./dist/store/tmp')
-const picPath = resolve('./dist/store/tmp/pics')
-const thbPath = resolve('./dist/store/tmp/thumbs')
+const tmpPath = resolve('./store/tmp')
+const picPath = resolve('./store/tmp/pics')
+const thbPath = resolve('./store/tmp/thumbs')
 
 function distance (fpa, fpb){
   let binStrA = _.padStart(Number.parseInt(fpa, 16).toString(2), 64, '0')
@@ -40,10 +40,10 @@ function distance (fpa, fpb){
 }
 
 function moveImg (id, archive, img){
-  let picArchPath = resolve(`dist/store/pics/${archive}`)
+  let picArchPath = resolve(`store/pics/${archive}`)
   if (!existsSync(picArchPath)) mkdirSync(picArchPath)
 
-  let thbArchPath = resolve(`dist/store/thumbs/${archive}`)
+  let thbArchPath = resolve(`store/thumbs/${archive}`)
   if (!existsSync(thbArchPath)) mkdirSync(thbArchPath)
 
   let picPath = resolve(picArchPath, `${id}.jpg`)

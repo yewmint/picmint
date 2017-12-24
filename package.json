@@ -3,17 +3,40 @@
   "version": "0.0.0",
   "description": "tag based picture management application",
   "main": "./dist/main.js",
+  "build": {
+    "appId": "me.yewmint.picmint",
+    "directories": {
+      "app": "dist",
+      "output": "bundle"
+    },
+    "nodeGypRebuild": false,
+    "npmRebuild": true,
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": "x64"
+        },
+        {
+          "target": "appx",
+          "arch": "x64"
+        }
+      ]
+    }
+  },
   "scripts": {
     "start": "electron .",
     "lint": "eslint src",
     "clean": "rimraf dist/*",
     "rebuild": "yarn run clean && yarn run build",
     "build": "yarn run lint && yarn run build:main && yarn run build:renderer",
-    "build:main": "cross-env NODE_ENV=production webpack -p --config config/main.config.js",
+    "build:main": "cross-env NODE_ENV=production webpack -p --config config/main.config.production.js",
     "dev:main": "webpack --config config/main.config.js",
-    "build:renderer": "cross-env NODE_ENV=production webpack -p --config config/renderer.config.js",
+    "build:renderer": "cross-env NODE_ENV=production webpack -p --config config/renderer.config.production.js",
     "dev:renderer": "webpack-dev-server --config config/renderer.config.js",
-    "electron:rebuild": "electron-rebuild"
+    "electron:rebuild": "electron-rebuild",
+    "pack": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
     "type": "git",
@@ -41,6 +64,7 @@
     "copyfiles": "^1.2.0",
     "cross-env": "^3.1.4",
     "electron": "^1.7.9",
+    "electron-builder": "^19.49.0",
     "electron-rebuild": "^1.6.0",
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
@@ -50,7 +74,8 @@
     "rimraf": "^2.6.0",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0",
-    "webpack-node-externals": "^1.6.0"
+    "webpack-node-externals": "^1.6.0",
+    "webpack-synchronizable-shell-plugin": "^0.0.6"
   },
   "dependencies": {
     "animejs": "^2.2.0",

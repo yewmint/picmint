@@ -4,7 +4,7 @@ import { format } from 'url'
 import { join } from 'path'
 import { exec } from 'child_process'
 import { manager } from './system'
-//import './server'
+import server from './server'
 
 import settings from '../app.config.json'
 import iconPath from '../asset/icon@0.125x.png'
@@ -15,7 +15,6 @@ let PORT = 3000
 let PATH_NAME = INDEX_PATH
 if (process.env['NODE_ENV'] === 'production'){
   PORT = settings.SERVER_PORT
-  PATH_NAME = join('dist', INDEX_PATH)
 }
 
 const HTTP_PATH = format({
@@ -27,7 +26,7 @@ const HTTP_PATH = format({
 })
 
 let win
-let icon = nativeImage.createFromPath(join('dist', iconPath))
+let icon = nativeImage.createFromPath(join(iconPath))
 
 function createWindow () {
   win = new BrowserWindow({
@@ -43,15 +42,16 @@ function createWindow () {
   })
 
   win.loadURL(HTTP_PATH)
-  win.webContents.openDevTools()
+  if (process.env['NODE_ENV'] !== 'production'){
+    win.webContents.openDevTools()
+  }
 
   win.on('closed', () => {
     win = null
-    app.quit()
   })
 
   ipcMain.on('open-image', (ev, url) => {
-    let imgPath = join(app.getAppPath(), 'dist', url)
+    let imgPath = join(app.getAppPath(), url)
     exec(`start ${imgPath}`)
   })
 
@@ -62,6 +62,7 @@ app.on('ready', createWindow)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     manager.leave()
+    server.close()
     app.quit()
   }
 })
