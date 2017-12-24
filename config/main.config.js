@@ -1,6 +1,7 @@
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: './src/main.js',
@@ -11,7 +12,7 @@ module.exports = {
 
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../app'),
     publicPath: '/'
   },
 
@@ -37,13 +38,17 @@ module.exports = {
   plugins: [
     new MakeDirWebpackPlugin({
       dirs: [
-        { path: './dist/store' },
-        { path: './dist/store/pics' },
-        { path: './dist/store/thumbs' },
-        { path: './dist/store/tmp' },
-        { path: './dist/store/tmp/pics' },
-        { path: './dist/store/tmp/thumbs' },
+        { path: './app/store' },
+        { path: './app/store/pics' },
+        { path: './app/store/thumbs' },
+        { path: './app/store/tmp' },
+        { path: './app/store/tmp/pics' },
+        { path: './app/store/tmp/thumbs' },
       ]
-    })
+    }),
+
+    new CopyWebpackPlugin([
+      { from: 'src/package.json', to: 'app' }
+    ])
   ]
 }

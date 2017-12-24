@@ -1,22 +1,23 @@
 import _ from 'lodash'
-import { format } from 'util'
 import moment from 'moment'
 import { rpc } from '../utils'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { DB_PATH } from '../../app.config.json'
+import { resolve } from 'path'
 
 const NUM_PER_ARCHIVE = 100
+const DB_REAL_PATH = resolve(process.resourcesPath, DB_PATH)
 
 let dbData = []
-if (existsSync(DB_PATH)){
-  let content = readFileSync(DB_PATH, {encoding: 'utf-8'})
+if (existsSync(DB_REAL_PATH)){
+  let content = readFileSync(DB_REAL_PATH, {encoding: 'utf-8'})
   dbData = _.concat([], JSON.parse(content))
 }
 
 function syncDB (){
   dbData = _.sortBy(dbData, 'id')
   let content = JSON.stringify(dbData)
-  writeFileSync(DB_PATH, content, {encoding: 'utf-8'})
+  writeFileSync(DB_REAL_PATH, content, {encoding: 'utf-8'})
 }
 
 export const db = {

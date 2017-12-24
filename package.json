@@ -2,11 +2,11 @@
   "name": "picmint",
   "version": "0.0.0",
   "description": "tag based picture management application",
-  "main": "./dist/main.js",
+  "main": "app/main.js",
   "build": {
     "appId": "me.yewmint.picmint",
     "directories": {
-      "app": "dist",
+      "app": "app",
       "output": "bundle"
     },
     "nodeGypRebuild": false,
@@ -14,15 +14,13 @@
     "win": {
       "target": [
         {
-          "target": "portable",
-          "arch": "x64"
-        },
-        {
-          "target": "appx",
+          "target": "dir",
           "arch": "x64"
         }
       ]
-    }
+    },
+    "files": "**/*",
+    "asar": false
   },
   "scripts": {
     "start": "electron .",
@@ -36,7 +34,7 @@
     "dev:renderer": "webpack-dev-server --config config/renderer.config.js",
     "electron:rebuild": "electron-rebuild",
     "pack": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-rebuild"
   },
   "repository": {
     "type": "git",

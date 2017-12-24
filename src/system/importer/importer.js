@@ -1,5 +1,4 @@
 import copy from './copy'
-import process from './process'
 import rimraf from 'rimraf'
 import { db } from '../db'
 import { resolve, basename } from 'path'
@@ -24,9 +23,13 @@ function rmrf(path) {
 
 const THRESHOLD = 1
 
-const tmpPath = resolve('./store/tmp')
-const picPath = resolve('./store/tmp/pics')
-const thbPath = resolve('./store/tmp/thumbs')
+const tmpPath = resolve(process.resourcesPath, './app/store/tmp')
+const picPath = resolve(
+  process.resourcesPath, './app/store/tmp/pics'
+)
+const thbPath = resolve(
+  process.resourcesPath, './app/store/tmp/thumbs'
+)
 
 function distance (fpa, fpb){
   let binStrA = _.padStart(Number.parseInt(fpa, 16).toString(2), 64, '0')
@@ -40,10 +43,14 @@ function distance (fpa, fpb){
 }
 
 function moveImg (id, archive, img){
-  let picArchPath = resolve(`store/pics/${archive}`)
+  let picArchPath = resolve(
+    process.resourcesPath, `./app/store/pics/${archive}`
+  )
   if (!existsSync(picArchPath)) mkdirSync(picArchPath)
 
-  let thbArchPath = resolve(`store/thumbs/${archive}`)
+  let thbArchPath = resolve(
+    process.resourcesPath, `./app/store/thumbs/${archive}`
+  )
   if (!existsSync(thbArchPath)) mkdirSync(thbArchPath)
 
   let picPath = resolve(picArchPath, `${id}.jpg`)

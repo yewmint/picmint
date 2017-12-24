@@ -2,8 +2,6 @@ const path = require('path')
 const UglifyJsPlugin = require('webpack').optimize.UglifyJsPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const WebpackSynchronizableShellPlugin = 
-  require('webpack-synchronizable-shell-plugin')
 const { WINDOW_TITLE } = require('../app.config.json')
 
 module.exports = {
@@ -19,7 +17,7 @@ module.exports = {
     filename: 'js/app.js',
     // the output bundle
 
-    path: path.resolve(__dirname, '../dist')
+    path: path.resolve(__dirname, '../app')
   },
 
   module: {
