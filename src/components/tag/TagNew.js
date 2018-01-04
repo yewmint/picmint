@@ -69,6 +69,18 @@ export default class TagNew extends React.Component {
     }
   }
 
+  /**
+   * on enter pressed
+   * 
+   * @param {KeyboardEvent} ev 
+   * @memberof TagNew
+   */
+  handleEnterKey(ev){
+    if (ev.key === 'Enter') {
+      this.handleClick()
+    }
+  }
+
   render (){
     return (
       <div className={classes.new}>
@@ -77,6 +89,7 @@ export default class TagNew extends React.Component {
           value={this.state.value} 
           onChange={ev => this.handleChange(ev)} 
           placeholder={'Enter tag'}
+          onKeyPress={ev => this.handleEnterKey(ev)}
         />
         <button onClick={(ev) => this.handleClick(ev)} ><MdAdd /></button>
       </div>

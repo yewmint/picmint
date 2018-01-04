@@ -4,6 +4,7 @@ import Feature from './Feature'
 import Search from './Search'
 import Import from './Import'
 import Detail from './Detail'
+import Duplicate from './Duplicate'
 import PageContainer from './PageContainer'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 
@@ -37,6 +38,7 @@ export default class UI extends React.Component {
             <Search />
             <Import />
             <Detail />
+            <Duplicate />
             <Route exact path="/" render={() => (
               <Redirect from="/" to="/feature" />
             )} />

@@ -4,14 +4,12 @@ npm-debug.log
 dist
 *.swp
 
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
+.vscode
 /dist/*
 /asset/*.ai
 /asset/*.psd
 
 /node_modules/
+/bundle/
+/app/
+/tmp/

@@ -37,10 +37,8 @@ class Detail extends React.Component {
 
   _loadImg (){
     let id = Number.parseInt(this.props.id)
-    let result = rpc.call('db-get-img', id)
-    if (result.success) {
-      this.props.setup(result.img)
-    }
+    let img = rpc.call('db-get-img', id)
+    this.props.setup(img)
   }
 
   _isLoaded (){
@@ -49,7 +47,7 @@ class Detail extends React.Component {
 
   render (){
     let img = this.props.img
-    let src = `/store/imgs/${img.archive}/${img.id}.jpg`
+    let src = `/store/pics/${img.archive}/${img.id}.jpg`
 
     return (
       <div className={classes.detail}>
