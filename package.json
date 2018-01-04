@@ -57,6 +57,7 @@
     "babel-loader": "^6.2.10",
     "babel-plugin-version-inline": "^1.0.0",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-hyperapp": "^2.3.0",
     "babel-preset-react": "^6.22.0",
     "copy-webpack-plugin": "^4.2.3",
     "copyfiles": "^1.2.0",
@@ -68,6 +69,7 @@
     "html-webpack-plugin": "^2.30.1",
     "make-dir-webpack-plugin": "^0.1.0",
     "node-gyp": "^3.6.2",
+    "parcel-bundler": "^1.4.1",
     "react-hot-loader": "^3.0.0-beta.6",
     "rimraf": "^2.6.0",
     "webpack": "^2.2.0",
@@ -90,6 +92,7 @@
     "jss-nested": "^6.0.1",
     "jss-preset-default": "^4.0.1",
     "lodash": "^4.17.4",
+    "lowdb": "^1.0.0",
     "moment": "^2.19.3",
     "prop-types": "^15.6.0",
     "react": "^15.4.2",
@@ -103,6 +106,7 @@
     "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+    "serve": "^6.4.3",
     "sharp": "^0.18.4"
   }
 }

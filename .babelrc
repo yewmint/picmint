@@ -1,6 +1,7 @@
 {
   "presets": [
     "react",
+    "hyperapp",
     "env",
     "stage-2"
   ],
