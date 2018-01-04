@@ -6,7 +6,7 @@ import { DB_PATH } from '../../app.config.json'
 import { resolve } from 'path'
 
 const NUM_PER_ARCHIVE = 100
-const DB_REAL_PATH = resolve(process.resourcesPath, DB_PATH)
+const DB_REAL_PATH = resolve(process.rootPath, DB_PATH)
 
 let dbData = []
 if (existsSync(DB_REAL_PATH)){

@@ -10,3 +10,18 @@
 notice:
 1. new img duplicated with existent img should replace original one
 2. new img duplicated with another new img should insert new record
+
+## Store V2
+
+1. if new store, create hash for all pictures
+2. if old store, check file path to handle changes
+3. forced rehash when requested
+
+`async Store.load()`: load a path as store, watching png and jpg files
+`size()`: get size of store
+`async search(string)`: search tags
+`setTag(hash, tagString)`: set tags for picture
+
+## Picture
+
+

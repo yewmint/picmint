@@ -9,7 +9,6 @@ import server from './server'
 import settings from '../app.config.json'
 import iconPath from '../asset/icon@0.125x.png'
 
-
 process.on('uncaughtException', () => {
   process.abort()
 })
@@ -34,8 +33,9 @@ let win
 let icon = nativeImage.createFromPath(iconPath)
 
 function createWindow () {
-  server.start(join(process.resourcesPath, 'app'))
-  console.log(join(process.resourcesPath, 'app'))
+  process.rootPath = app.getAppPath()
+
+  server.start()
 
   win = new BrowserWindow({
     title: settings.WINDOW_TITLE,
@@ -92,7 +92,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (win === null) {
     dialog.showErrorBox('error', app.getAppPath())
-    createWindow()
+    //createWindow()
   }
 })
 

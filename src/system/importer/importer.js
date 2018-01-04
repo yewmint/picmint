@@ -23,12 +23,12 @@ function rmrf(path) {
 
 const THRESHOLD = 1
 
-const tmpPath = resolve(process.resourcesPath, './app/store/tmp')
+const tmpPath = resolve(process.rootPath, './app/store/tmp')
 const picPath = resolve(
-  process.resourcesPath, './app/store/tmp/pics'
+  process.rootPath, './app/store/tmp/pics'
 )
 const thbPath = resolve(
-  process.resourcesPath, './app/store/tmp/thumbs'
+  process.rootPath, './app/store/tmp/thumbs'
 )
 
 function distance (fpa, fpb){
@@ -44,12 +44,12 @@ function distance (fpa, fpb){
 
 function moveImg (id, archive, img){
   let picArchPath = resolve(
-    process.resourcesPath, `./app/store/pics/${archive}`
+    process.rootPath, `./app/store/pics/${archive}`
   )
   if (!existsSync(picArchPath)) mkdirSync(picArchPath)
 
   let thbArchPath = resolve(
-    process.resourcesPath, `./app/store/thumbs/${archive}`
+    process.rootPath, `./app/store/thumbs/${archive}`
   )
   if (!existsSync(thbArchPath)) mkdirSync(thbArchPath)
 

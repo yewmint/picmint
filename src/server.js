@@ -7,7 +7,7 @@ const app = express()
 let server
 
 export default {
-  start (path){
+  start (path = process.rootPath){
     app.use(express.static(path))
     server = app.listen(SERVER_PORT)
   },
