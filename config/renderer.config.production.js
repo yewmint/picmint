@@ -24,15 +24,21 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.png$|\.jpg$/,
-        loader: 'file-loader',
-        options: {
-          outputPath: './img/'
+        use: {
+          loader: 'file-loader',
+          options: {
+            outputPath: './img/'
+          }
         }
+      },
+      {
+        test: /\.sass$|\.scss$/,
+        use: [ 'style-loader', 'css-loader', 'sass-loader' ]
       }
     ],
   },
@@ -44,7 +50,8 @@ module.exports = {
 
     new CopyWebpackPlugin([
       { from: 'lib/css/*.css', to: './css/', flatten: true },
-      { from: 'src/index.css', to: './css/' }
+      { from: 'lib/font/*.*', to: './font/', flatten: true },
+      { from: 'lib/js/*.*', to: './js/', flatten: true }
     ]),
 
     new HtmlWebpackPlugin({

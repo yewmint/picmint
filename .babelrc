@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "hyperapp",
+    "env",
+    "stage-2"
+  ],
+  "plugins": [
+    "version-inline"
+  ]
+}

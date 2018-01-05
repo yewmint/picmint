@@ -29,12 +29,11 @@
     "rebuild": "yarn run clean && yarn run build",
     "build": "yarn run lint && yarn run build:main && yarn run build:renderer",
     "build:main": "cross-env NODE_ENV=production webpack -p --config config/main.config.production.js",
-    "dev:main": "webpack --config config/main.config.js",
+    "dev:main": "cross-env NODE_ENV=development webpack --config config/main.config.js",
     "build:renderer": "cross-env NODE_ENV=production webpack -p --config config/renderer.config.production.js",
-    "dev:renderer": "webpack-dev-server --config config/renderer.config.js",
+    "dev:renderer": "cross-env NODE_ENV=development webpack -w --config config/renderer.config.js",
     "electron:rebuild": "electron-rebuild",
-    "pack": "electron-builder",
-    "postinstall": "electron-rebuild"
+    "pack": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -75,7 +74,6 @@
     "react-hot-loader": "^3.0.0-beta.6",
     "rimraf": "^2.6.0",
     "webpack": "^2.2.0",
-    "webpack-dev-server": "^2.2.0",
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
@@ -83,12 +81,17 @@
     "babel-polyfill": "^6.26.0",
     "classname": "^0.0.0",
     "color": "^2.0.1",
-    "eslint-plugin-react": "^6.9.0",
+    "css-loader": "^0.28.7",
+    "eslint-plugin-react": "^7.5.1",
     "hyperapp": "^1.0.1",
     "immutable": "^3.8.2",
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",
+    "node-sass": "^4.7.2",
+    "popmotion": "^8.1.7",
     "prop-types": "^15.6.0",
-    "serve": "^6.4.3"
+    "sass-loader": "^6.0.6",
+    "serve": "^6.4.3",
+    "style-loader": "^0.19.1"
   }
 }

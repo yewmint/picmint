@@ -35,12 +35,6 @@ module.exports = {
   plugins: [
     new MakeDirWebpackPlugin({
       dirs: [
-        { path: './app/store' },
-        { path: './app/store/pics' },
-        { path: './app/store/thumbs' },
-        { path: './app/store/tmp' },
-        { path: './app/store/tmp/pics' },
-        { path: './app/store/tmp/thumbs' },
       ]
     }),
 
