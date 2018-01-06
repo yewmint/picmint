@@ -61,6 +61,17 @@ class Store {
   }
 
   /**
+   * update tags of specified hash
+   * 
+   * @param {string} hash 
+   * @param {string} tags 
+   * @memberof Store
+   */
+  updateTags (hash, tags){
+    this.db.get('tags').find({ hash }).assign({ tags }).write()
+  }
+
+  /**
    * get size of current store
    * 
    * @returns {number}

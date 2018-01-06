@@ -7,7 +7,7 @@ import * as manager from './manager'
 import './store-system'
 
 import settings from '../app.config.json'
-import iconPath from '../asset/icon@0.125x.png'
+import iconPath from './assets/icon@0.125x.png'
 
 process.on('uncaughtException', () => {
   process.abort()
@@ -18,6 +18,16 @@ const FILE_PATH = format({
   protocol: 'file:',
   slashes: true
 })
+
+const HTTP_PATH = format({
+  pathname: 'index.html',
+  hostname: 'localhost',
+  port: 8080,
+  protocol: 'http:',
+  slashes: true
+})
+
+const PATH = process.env.NODE_ENV === 'production' ? FILE_PATH : HTTP_PATH
 
 let win
 let icon = nativeImage.createFromPath(iconPath)
@@ -38,7 +48,7 @@ function createWindow () {
     show: false
   })
 
-  win.loadURL(FILE_PATH)
+  win.loadURL(PATH)
   if (process.env['NODE_ENV'] !== 'production'){
     win.webContents.openDevTools()
   }

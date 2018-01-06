@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -7,8 +8,6 @@ module.exports = {
   entry: './src/main.js',
 
   target: 'electron-main',
-
-  externals: [nodeExternals()],
 
   output: {
     filename: 'main.js',
@@ -23,9 +22,10 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.png$/,
+        test: /\.(png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
+          name: '[name].[ext]?[hash]',
           outputPath: './img/'
         }
       }
@@ -33,6 +33,23 @@ module.exports = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false
+      }
+    }),
+
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    }),
+    
     new MakeDirWebpackPlugin({
       dirs: [
       ]

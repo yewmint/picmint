@@ -13,6 +13,10 @@ const system = {
     rpc.listen('store-open', async ({ path }) => {
       store = await load(path)
 
+      if (server && _.isFunction(server.stop)){
+        server.stop()
+      }
+
       server = serve(path, {
         port: SERVER_PORT
       })
@@ -27,6 +31,10 @@ const system = {
 
     rpc.listen('store-size', () => {
       return store.size()
+    })
+
+    rpc.listen('store-update-tags', ({ picture }) => {
+      store.updateTags (picture.hash, picture.tags)
     })
   },
 
