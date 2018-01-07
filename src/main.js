@@ -5,6 +5,8 @@ import { join } from 'path'
 import { exec } from 'child_process'
 import * as manager from './manager'
 import './store-system'
+var sqlite3 = require('sqlite3').verbose()
+var db = new sqlite3.Database(':memory:')
 
 import settings from '../app.config.json'
 import iconPath from './assets/icon@0.125x.png'
@@ -32,14 +34,14 @@ const PATH = process.env.NODE_ENV === 'production' ? FILE_PATH : HTTP_PATH
 let win
 let icon = nativeImage.createFromPath(iconPath)
 
-function createWindow () {
+function createWindow() {
   manager.enter()
 
   win = new BrowserWindow({
     title: settings.WINDOW_TITLE,
-    width: settings.WINDOW_WIDTH, 
+    width: settings.WINDOW_WIDTH,
     height: settings.WINDOW_HEIGHT,
-    minWidth: settings.WINDOW_MIN_WIDTH, 
+    minWidth: settings.WINDOW_MIN_WIDTH,
     minHeight: settings.WINDOW_MIN_HEIGHT,
     useContentSize: true,
     autoHideMenuBar: true,
@@ -49,7 +51,7 @@ function createWindow () {
   })
 
   win.loadURL(PATH)
-  if (process.env['NODE_ENV'] !== 'production'){
+  if (process.env['NODE_ENV'] !== 'production') {
     win.webContents.openDevTools()
   }
 

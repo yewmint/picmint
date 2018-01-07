@@ -1,11 +1,10 @@
 import 'babel-polyfill'
 import Vue from 'vue'
-import Vuex from 'vuex'
 import App from './components/App.vue'
+import { store } from './vuex'
 
-Vue.use(Vuex)
-
-new Vue({
+window.app = new Vue({
   el: '#root',
+  store,
   render: h => h(App)
 })

@@ -1,6 +1,8 @@
 $text-black: #4c4c4c
 $text-white: #ffffff
 
+$btn-transition: background-color 200ms, box-shadow 200ms, color 200ms
+
 %center-child
   display: grid
   justify-items: center
@@ -18,15 +20,15 @@ $text-white: #ffffff
   cursor: pointer
   -webkit-app-region: no-drag
   background-color: transparent
-  transition: background-color 300ms, box-shadow 300ms, color 300ms
+  transition: $btn-transition
 
   & i
     font-size: 20px
-    transition: background-color 300ms, box-shadow 300ms, color 300ms
+    transition: $btn-transition
 
   &:hover
     background-color: #aaa
-    transition: background-color 300ms, box-shadow 300ms, color 300ms
+    transition: $btn-transition
   
   &:focus
     outline: none
@@ -44,7 +46,7 @@ $text-white: #ffffff
   @extend %btn
 
   &:hover  
-    background-color: #7c5aaf
+    background-color: rgba(49, 49, 49, 0.58)
 
   & i
-    color: $text-black
+    color: $text-white

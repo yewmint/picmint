@@ -15,7 +15,7 @@ export default {
   },
 
   computed: {
-    className: function () { 
+    className () { 
       return `${this.theme}-btn` 
     }
   }
