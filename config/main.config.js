@@ -1,6 +1,7 @@
 const path = require('path')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: './src/main.js',
@@ -14,6 +15,8 @@ module.exports = {
   },
 
   devtool: 'inline-source-map',
+
+  externals: [nodeExternals()],
 
   module: {
     loaders: [
@@ -35,12 +38,9 @@ module.exports = {
 
   plugins: [
     new MakeDirWebpackPlugin({
-      dirs: [
-      ]
+      dirs: []
     }),
 
-    new CopyWebpackPlugin([
-      { from: 'src/package.json', to: '.' }
-    ])
+    new CopyWebpackPlugin([{ from: 'src/package.json', to: '.' }])
   ]
 }

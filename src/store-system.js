@@ -8,6 +8,9 @@ import { SERVER_PORT } from '../app.config.json'
 let store = null
 let server = null
 
+/**
+ * expose api to rpc
+ */
 const system = {
   enter (){
     rpc.listen('store-open', async ({ path }) => {
@@ -24,17 +27,17 @@ const system = {
       rpc.call('store-did-open')
     })
 
-    rpc.listen('store-search', ({ words }) => {
-      let result = store.search(words)
+    rpc.listen('store-search', async ({ words }) => {
+      let result = await store.search(words)
       rpc.call('store-did-search', { result })
     })
 
-    rpc.listen('store-size', () => {
-      return store.size()
+    rpc.listen('store-add-tag', async ({ hash, tag }) => {
+      await store.addTag(hash, tag)
     })
 
-    rpc.listen('store-update-tags', ({ picture }) => {
-      store.updateTags (picture.hash, picture.tags)
+    rpc.listen('store-remove-tag', async ({ hash, tag }) => {
+      await store.addTag(hash, tag)
     })
   },
 

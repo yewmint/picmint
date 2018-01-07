@@ -1,8 +1,8 @@
 <template>
   <div :class="className">
-    <div class="title-text">
+    <p class="title-text">
       {{ title }}
-    </div>
+    </p>
     <div class="title-drag"></div>
     <div class="title-btn-container">
       <TitleButton :theme="theme" :callback="minimize" iconName="remove" />
@@ -15,27 +15,46 @@
 <script>
 import TitleButton from './TitleButton'
 import classname from 'classname'
+import { remote } from 'electron'
 import config from '../../app.config.json'
+
+const win = remote.getCurrentWindow()
 
 export default {
   components: { TitleButton },
-
-  props: {
-    theme: { type: String, default: 'light' }
-  },
   
   data: () => ({ 
     title: config.WINDOW_TITLE 
   }),
 
   methods: {
-    minimize: () => console.log('minimize'),
-    maxmize: () => console.log('maxmize'),
-    close: () => console.log('close'),
+    minimize () {
+      win.minimize()
+    },
+
+    maxmize () {
+      if (win.isMaximized()){
+        win.unmaximize()
+      }
+      else {
+        win.maximize()
+      }
+    },
+
+    close () {
+      win.close()
+    }
   },
 
   computed: {
-    className: () => classname('title', this.theme)
+    theme (){
+      return this.$store.state.titleTheme
+    },
+    
+    className (){
+      return classname('title', this.theme)
+    }
+      
   }
 }
 </script>

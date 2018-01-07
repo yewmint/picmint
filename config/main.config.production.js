@@ -1,8 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
-const nodeExternals = require('webpack-node-externals')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: './src/main.js',
@@ -11,7 +11,7 @@ module.exports = {
 
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, '../app'),
+    path: path.resolve(__dirname, '../app')
   },
 
   module: {
@@ -32,13 +32,15 @@ module.exports = {
     ]
   },
 
+  externals: [nodeExternals()],
+
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
       }
     }),
-    
+
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
       compress: {
@@ -49,14 +51,11 @@ module.exports = {
     new webpack.LoaderOptionsPlugin({
       minimize: true
     }),
-    
+
     new MakeDirWebpackPlugin({
-      dirs: [
-      ]
+      dirs: []
     }),
 
-    new CopyWebpackPlugin([
-      { from: 'src/package.json', to: '.' }
-    ])
+    new CopyWebpackPlugin([{ from: 'src/package.json', to: '.' }])
   ]
 }

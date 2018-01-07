@@ -1,18 +1,29 @@
 <template>
-  <Title theme="light" />
+  <div class="root">
+    <Title theme="light" />
+    <FullPage :page="page" />
+  </div>
 </template>
 
 <script>
 import Title from './Title'
+import FullPage from './FullPage'
 
 export default {
-  components: { Title }
+  components: { Title, FullPage },
+
+  computed: {
+    page (){
+      return this.$store.state.page
+    }
+  }
 }
 </script>
 
 <style lang="sass">
 @import 'common.sass'
-body 
+
+body
   background-color: #fff
   overflow: hidden
   -webkit-user-select: none
