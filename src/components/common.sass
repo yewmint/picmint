@@ -1,0 +1,50 @@
+$text-black: #4c4c4c
+$text-white: #ffffff
+
+%center-child
+  display: grid
+  justify-items: center
+  align-items: center
+
+%btn
+  display: inline-grid
+  justify-items: center
+  align-items: center
+  width: 40px
+  height: 40px
+  padding: 0
+  border: none
+  border-radius: 0
+  cursor: pointer
+  -webkit-app-region: no-drag
+  background-color: transparent
+  transition: background-color 300ms, box-shadow 300ms, color 300ms
+
+  & i
+    font-size: 20px
+    transition: background-color 300ms, box-shadow 300ms, color 300ms
+
+  &:hover
+    background-color: #aaa
+    transition: background-color 300ms, box-shadow 300ms, color 300ms
+  
+  &:focus
+    outline: none
+
+.light-btn
+  @extend %btn
+
+  &:hover
+    background-color: #aaaaaa
+
+  & i
+    color: $text-black
+
+.dark-btn
+  @extend %btn
+
+  &:hover  
+    background-color: #7c5aaf
+
+  & i
+    color: $text-black

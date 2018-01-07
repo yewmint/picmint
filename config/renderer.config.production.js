@@ -1,50 +1,111 @@
 const path = require('path')
-const UglifyJsPlugin = require('webpack').optimize.UglifyJsPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
 const { WINDOW_TITLE } = require('../app.config.json')
 
 module.exports = {
-  entry: [
-    './src/renderer.js',
-  ],
+  entry: './src/renderer.js',
   
   target: 'electron-renderer',
 
-  //externals: [nodeExternals()],
-
   output: {
     filename: 'js/app.js',
-    // the output bundle
-
     path: path.resolve(__dirname, '../app')
   },
 
   module: {
-    loaders: [
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          'vue-style-loader',
+          'css-loader'
+        ],
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
+        ],
+      },
+      {
+        test: /\.sass$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader?indentedSyntax'
+        ],
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            'scss': [
+              'vue-style-loader',
+              'css-loader',
+              'sass-loader'
+            ],
+            'sass': [
+              'vue-style-loader',
+              'css-loader',
+              'sass-loader?indentedSyntax'
+            ]
+          }
+        }
+      },
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: 'babel-loader',
         exclude: /node_modules/,
       },
       {
-        test: /\.png$|\.jpg$/,
+        test: /\.(png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
+          name: '[name].[ext]?[hash]',
           outputPath: './img/'
         }
       }
     ],
   },
 
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    },
+    extensions: ['*', '.js', '.vue', '.json']
+  },
+  
+  performance: {
+    hints: false
+  },
+
   plugins: [
-    new UglifyJsPlugin({
-      test: /\.jsx?$/
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false
+      }
+    }),
+
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
     }),
 
     new CopyWebpackPlugin([
       { from: 'lib/css/*.css', to: './css/', flatten: true },
-      { from: 'src/index.css', to: './css/' }
+      { from: 'lib/font/*.*', to: './font/', flatten: true },
+      { from: 'lib/js/*.*', to: './js/', flatten: true }
     ]),
 
     new HtmlWebpackPlugin({

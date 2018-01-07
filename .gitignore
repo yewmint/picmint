@@ -13,3 +13,6 @@ dist
 /bundle/
 /app/
 /tmp/
+/tmp2/
+
+/.cache/

@@ -1,5 +1,4 @@
 const path = require('path')
-const nodeExternals = require('webpack-node-externals')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -8,27 +7,26 @@ module.exports = {
 
   target: 'electron-main',
 
-  externals: [nodeExternals()],
-
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, '../app'),
     publicPath: '/'
   },
 
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
 
   module: {
     loaders: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/
       },
       {
-        test: /\.png$/,
+        test: /\.(png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
+          name: '[name].[ext]?[hash]',
           outputPath: './img/'
         }
       }
@@ -38,17 +36,11 @@ module.exports = {
   plugins: [
     new MakeDirWebpackPlugin({
       dirs: [
-        { path: './app/store' },
-        { path: './app/store/pics' },
-        { path: './app/store/thumbs' },
-        { path: './app/store/tmp' },
-        { path: './app/store/tmp/pics' },
-        { path: './app/store/tmp/thumbs' },
       ]
     }),
 
     new CopyWebpackPlugin([
-      { from: 'src/package.json', to: 'app' }
+      { from: 'src/package.json', to: '.' }
     ])
   ]
 }

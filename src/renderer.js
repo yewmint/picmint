@@ -1,28 +1,11 @@
 import 'babel-polyfill'
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { AppContainer } from 'react-hot-loader'
-import App from './components/App'
-import { remote } from 'electron'
+import Vue from 'vue'
+import Vuex from 'vuex'
+import App from './components/App.vue'
 
-const render = (Component, callback) => {
-  ReactDOM.render(
-    <AppContainer>
-      <Component />
-    </AppContainer>,
-    document.getElementById('root'),
-    callback
-  )
-}
+Vue.use(Vuex)
 
-render(App, () => {
-  remote.getCurrentWindow().show()
+new Vue({
+  el: '#root',
+  render: h => h(App)
 })
-
-// Webpack Hot Module Replacement API
-if (module.hot) {
-  module.hot.accept('./components/App', () => { 
-    const NextApp = require('./components/App').default
-    render(NextApp) 
-  })
-}

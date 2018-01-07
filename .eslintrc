@@ -1,27 +1,32 @@
 {
-  "ecmaFeatures": {
-    "jsx": true,
-    "modules": true
-  },
+  "plugins": [
+    "vue"
+  ],
+
   "env": {
     "browser": true,
     "node": true,
     "es6": true,
-    "mocha": true
+    "jest": true
   },
+
   "parser": "babel-eslint",
+
   "extends": "eslint:recommended",
+
   "rules": {
     "indent": [ "error", 2 ],
     "quotes": [ 2, "single" ],
     "strict": [ 2, "never" ],
     "semi": [ "error",  "never" ],
-    "react/jsx-uses-react": 2,
-    "react/jsx-uses-vars": 2,
-    "react/react-in-jsx-scope": 2,
     "no-console": 0
   },
-  "plugins": [
-    "react"
-  ]
+
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  }
 }
