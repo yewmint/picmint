@@ -10,26 +10,10 @@
 </template>
 
 <script>
-import { remote } from 'electron'
-import _ from 'lodash'
-
 export default {
   methods: {
     handleOpen (){
-      let paths = remote.dialog.showOpenDialog({
-        title: 'Choose album directory',
-        properties: [
-          'openDirectory'
-        ]
-      })
-
-      if (!_.isArray(paths)){
-        return 
-      }
-
-      let path = paths[0]
-      
-      this.$store.dispatch('loadStore', { path })
+      this.$store.dispatch('loadStore')
     }
   }
 }

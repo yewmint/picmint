@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const webpack = require('webpack')
 const { WINDOW_TITLE } = require('../app.config.json')
 
@@ -91,12 +92,7 @@ module.exports = {
       }
     }),
     
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
+    new UglifyJsPlugin(),
 
     new webpack.LoaderOptionsPlugin({
       minimize: true

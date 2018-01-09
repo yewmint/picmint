@@ -2,19 +2,38 @@
   <div class="root">
     <Title theme="light" />
     <FullPage :page="page" />
+    <Modal :content="Detail" :show="showDetail" />
+    <Modal :content="TagList" :show="showTagList" />
   </div>
 </template>
 
 <script>
 import Title from './Title'
 import FullPage from './FullPage'
+import Modal from './Modal'
+import Detail from './Detail'
+import TagList from './TagList'
 
 export default {
-  components: { Title, FullPage },
+  components: { Title, FullPage, Modal },
+
+  data (){
+    return {
+      Detail, TagList
+    }
+  },
 
   computed: {
     page (){
       return this.$store.state.page
+    },
+
+    showDetail (){
+      return this.$store.state.detail.show
+    },
+
+    showTagList (){
+      return this.$store.state.tagList.show
     }
   }
 }
@@ -35,7 +54,6 @@ body
 *::-webkit-scrollbar
   width: 10px
   height: 10px
-
  
 *::-webkit-scrollbar-thumb
   background: #888

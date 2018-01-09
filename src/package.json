@@ -5,16 +5,10 @@
   "author": "yewmint <yewmint@outlook.com>",
   "main": "main.js",
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "classname": "^0.0.0",
-    "electron-rebuild": "^1.6.0",
-    "immer": "^0.2.2",
     "lodash": "^4.17.4",
-    "lowdb": "^1.0.0",
-    "popmotion": "^8.1.7",
+    "babel-polyfill": "^6.26.0",
     "serve": "^6.4.3",
     "sqlite3": "^3.1.13",
-    "vue": "^2.5.13",
-    "vuex": "^3.0.1"
+    "sqlite3": "^3.1.13"
   }
 }

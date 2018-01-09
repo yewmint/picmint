@@ -3,17 +3,18 @@
  * @author yewmint
  */
 
-import { format } from 'util'
-import { getFiles, md5 } from './utils'
+import { getFiles, md5, fileSize, asyncMap, format } from './utils'
 import { join } from 'path'
 import _ from 'lodash'
 import sqlite from 'sqlite3'
+import { SERVER_PORT } from '../app.config.json'
 
 const CREATE_TABLE_QUERY = `
 PRAGMA encoding = "UTF-8";
 
 CREATE TABLE IF NOT EXISTS paths (
   path TEXT PRIMARY KEY,
+  size INT,
   hash TEXT
 );
 
@@ -24,19 +25,13 @@ CREATE TABLE IF NOT EXISTS tags (
 `
 
 const REMOVE_PATH_QUERY = `
-DELETE FROM paths WHERE path = '%s'
+DELETE FROM paths WHERE path = '$path'
 `
 
 const INSERT_PATH_QUERY = `
 INSERT INTO paths 
-SELECT '%s', '%s'
-WHERE (SELECT COUNT(*) FROM paths WHERE path = '%s') = 0
-`
-
-const INSERT_TAG_QUERY = `
-INSERT INTO tags 
-SELECT '%s', '%s'
-WHERE (SELECT COUNT(*) FROM tags WHERE hash = '%s') = 0
+SELECT '$path' path, '$size' size, '$hash' hash
+WHERE NOT EXISTS (SELECT * FROM paths WHERE path = '$path' LIMIT 1)
 `
 
 const GET_ALL_PATH_QUERY = `
@@ -50,29 +45,18 @@ JOIN (SELECT hash, GROUP_CONCAT(tag, ' ') tags FROM tags GROUP BY hash) AS T
 ON paths.hash = T.hash
 `
 
-const GET_PICTURE_QUERY = `
-SELECT * FROM
-(
-  SELECT paths.hash, paths.path, T.tags
-  FROM paths
-  JOIN (SELECT hash, GROUP_CONCAT(tag, ' ') tags FROM tags GROUP BY hash) AS T
-  ON paths.hash = T.hash
-)
-WHERE hash = '%s'
-`
-
 const SIZE_QUERY = `
-SELECT COUNT(*) FROM paths
+SELECT COUNT(*) size FROM paths
 `
 
 const HASH_BY_TAG_QUERY = `
-SELECT hash FROM tags WHERE tag = '%s' GROUP BY hash
+SELECT hash FROM tags WHERE tag = '$tag' GROUP BY hash
 `
 
 const HASHTAGS_BY_HASHES_QUERY = `
 SELECT T1.hash, GROUP_CONCAT(tags.tag, ' ') tags
 FROM tags
-JOIN (%s) AS T1
+JOIN ($subquery) AS T1
 ON T1.hash = tags.hash
 GROUP BY T1.hash
 `
@@ -80,19 +64,42 @@ GROUP BY T1.hash
 const PICTURE_BY_HASHTAGS_QUERY = `
 SELECT paths.hash, paths.path, T2.tags
 FROM paths
-JOIN (%s) AS T2
+JOIN ($subquery) AS T2
 ON paths.hash = T2.hash
+`
+
+const DEBUT_TAG_QUERY = `
+INSERT INTO tags 
+SELECT 'debut' tag, '$hash' hash
+WHERE NOT EXISTS (SELECT * FROM tags WHERE hash = '$hash' LIMIT 1)
 `
 
 const ADD_TAG_QUERY = `
 INSERT INTO tags 
-SELECT '%s', '%s'
-WHERE (SELECT COUNT(*) FROM tags WHERE tag = '%s' AND hash = '%s') = 0
+SELECT '$tag' tag, '$hash' hash
+WHERE NOT EXISTS (
+  SELECT * FROM tags WHERE tag = '$tag' AND hash = '$hash' LIMIT 1
+)
 `
 
 const REMOVE_TAG_QUERY = `
 DELETE FROM tags
-WHERE tag = '%s' AND hash = '%s'
+WHERE tag = '$tag' AND hash = '$hash'
+`
+
+const EXISTS_PATH_SIZE_QUERY = `
+SELECT 1 
+WHERE EXISTS(
+  SELECT * FROM paths WHERE path = '$path' AND size = $size LIMIT 1
+)
+`
+
+const UPDATE_PATH_QUERY = `
+UPDATE paths SET hash = '$hash', size = '$size' WHERE path = '$path'
+`
+
+const TAGS_QUERY = `
+SELECT tag FROM tags GROUP BY tag
 `
 
 /**
@@ -109,11 +116,18 @@ function dbCall(db, funcName, ...rest) {
       if (err) reject(err)
       else resolve(data)
     })
-  ).catch(err => console.error(err))
+  ).catch(err => {
+    console.error(err)
+    console.error(funcName, ...rest)
+  })
 }
 
 /**
- * used to monitor pictures of specified directory.
+ * monitor pictures of specified directory.
+ * features:
+ *  1. diffs directory with high performance using size cache and hash
+ *  2. provides tag system to manage and look up pictures
+ *  3. same tags provided for duplicate pictures
  *
  * @class Store
  */
@@ -128,13 +142,14 @@ class Store {
   }
 
   /**
-   * scan whole directory
+   * scan directory
    *
-   * 1. read current dir tree
-   * 2. get debut files which is scaned for md5 and pushed into
-   *    pictures and tags
-   * 3. get vanished files which will be removed from pictures but
-   *    staied in tags
+   * 1. diff current dir tree
+   * 2. debut files are scanned for md5 and size,
+   *    and pushed into database
+   * 3. vanished files are removed from 'paths' table,
+   *    yet tag-hash remained for next appearence
+   * 4. other files are rescanned if size doesn't match
    *
    * @memberof Store
    */
@@ -143,22 +158,35 @@ class Store {
 
     let db = this.db
 
-    let files = await getFiles(this.root)
-    let picFiles = _.filter(files, file => /\.jpg$|\.png$/.test(file))
+    let existFiles = await this._scanFolder (this.root)
+    let savedFiles = await dbCall(db, 'all', GET_ALL_PATH_QUERY)
 
-    let pathsResult = await dbCall(db, 'all', GET_ALL_PATH_QUERY)
-    let savedPaths = _.map(pathsResult, 'path')
-    let debutFiles = _.difference(picFiles, savedPaths)
-    let vanishedFiles = _.difference(savedPaths, picFiles)
+    let debutFiles = _.differenceBy(existFiles, savedFiles, 'path')
+    let vanishedFiles = _.differenceBy(savedFiles, existFiles, 'path')
+    let otherFiles = _.intersectionBy(existFiles, savedFiles, 'path')
 
     // scan debut files and push into pictures and tags
-    await Promise.all(debutFiles.map(debutFile => this._scanPicture(debutFile)))
+    await asyncMap(
+      debutFiles, 
+      async debutFile => {
+        await this._scanPicture(debutFile)
+      }
+    )
 
     // remove vanished files
-    await Promise.all(
-      vanishedFiles.map(vanishedFile =>
-        dbCall(db, 'run', format(REMOVE_PATH_QUERY, vanishedFile))
-      )
+    await asyncMap(
+      vanishedFiles,
+      async ({ path }) => {
+        await dbCall(db, 'run', format(REMOVE_PATH_QUERY, { path }))
+      }
+    )
+
+    // rescan existed files
+    await asyncMap(
+      otherFiles,
+      async otherFile => {
+        await this._rescanPicture(otherFile)
+      }
     )
   }
 
@@ -169,7 +197,8 @@ class Store {
    * @memberof Store
    */
   async all() {
-    return await dbCall(this.db, 'all', GET_ALL_PICTURES_QUERY)
+    let pictures = await dbCall(this.db, 'all', GET_ALL_PICTURES_QUERY)
+    return this._withUrl(pictures)
   }
 
   /**
@@ -180,7 +209,7 @@ class Store {
    * @memberof Store
    */
   async addTag (hash, tag){
-    await dbCall(this.db, 'run', format(ADD_TAG_QUERY, tag, hash, tag, hash)) 
+    await dbCall(this.db, 'run', format(ADD_TAG_QUERY, { tag, hash }))
   }
 
   /**
@@ -191,7 +220,7 @@ class Store {
    * @memberof Store
    */
   async removeTag (hash, tag){
-    await dbCall(this.db, 'run', format(REMOVE_TAG_QUERY, tag, hash))
+    await dbCall(this.db, 'run', format(REMOVE_TAG_QUERY, { tag, hash }))
   }
 
   /**
@@ -201,47 +230,58 @@ class Store {
    * @memberof Store
    */
   async size() {
-    return await dbCall(this.db, 'get', SIZE_QUERY)
+    let result = await dbCall(this.db, 'get', SIZE_QUERY)
+    return result.size
   }
 
   /**
    * search pictures of specified tags
    *
-   * @param {string} [tags='']
+   * @param {string} [text='']
    * @returns {object[]}
    * @memberof Store
    */
-  async search(tags = '') {
+  async search(text = '') {
     let db = this.db
-    let words = _(tags)
+
+    // tags are separated by space char
+    // escape single quote of sql
+    let tags = _(text)
       .split(/\s+/)
       .compact()
       .map(word => _.replace(word, '\'', '\'\''))
       .value()
 
-    let hashesQuery = words
-      .map(word => format(HASH_BY_TAG_QUERY, word))
+    // construct query
+    // 1. query to select hash containing all tags
+    let hashesQuery = tags
+      .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
       .join('\nINTERSECT\n')
 
-    let hashTagsQuery = format(HASHTAGS_BY_HASHES_QUERY, hashesQuery)
+    // 2. query to concat tags of hash
+    let hashTagsQuery = format(
+      HASHTAGS_BY_HASHES_QUERY, { subquery: hashesQuery }
+    )
 
-    let pictureQuery = format(PICTURE_BY_HASHTAGS_QUERY, hashTagsQuery)
+    // 3. query to join path and tag
+    let pictureQuery = format(
+      PICTURE_BY_HASHTAGS_QUERY, { subquery: hashTagsQuery }
+    )
 
     let pics = await dbCall(db, 'all', pictureQuery)
 
-    return pics
+    return this._withUrl(pics)
   }
 
   /**
-   * get picture data using hash
-   *
-   * @param {string} hash
-   * @returns {object}
+   * get all tags
+   * 
+   * @returns {string[]}
    * @memberof Store
-   * @private
    */
-  async _getPicture(hash) {
-    return await dbCall(this.db, 'get', format(GET_PICTURE_QUERY, hash))
+  async getTags (){
+    let result = await dbCall(this.db, 'all', TAGS_QUERY)
+    return _.map(result, 'tag')
   }
 
   /**
@@ -250,10 +290,14 @@ class Store {
    * @memberof Store
    */
   async _setupDB() {
+    if (_.isObject(this.db) && _.isFunction(this.db.close)){
+      await new Promise(resolve => this.db.close(resolve))
+    }
+
     let dbPath = join(this.root, 'store.db')
 
     let db = new sqlite.Database(dbPath)
-    await new Promise(resolve => db.exec(CREATE_TABLE_QUERY, resolve))
+    await dbCall(db, 'exec', CREATE_TABLE_QUERY)
 
     this.db = db
   }
@@ -261,19 +305,84 @@ class Store {
   /**
    * scan a specified picture
    *
-   * @param {string} path
+   * @param {object} file
    * @memberof Store
    */
-  async _scanPicture(path) {
+  async _scanPicture({ path, size }) {
     let db = this.db
     let realPath = join(this.root, path)
     let hash = await md5(realPath)
 
-    // 1. write path-hash
-    await dbCall(db, 'run', format(INSERT_PATH_QUERY, path, hash, path))
+    // 1. write path
+    await dbCall(db, 'run', format(INSERT_PATH_QUERY, { path, hash, size }))
 
-    // 2. write tags-hash if hash not found
-    await dbCall(db, 'run', format(INSERT_TAG_QUERY, 'debut', hash, hash))
+    // 2. write debut hash if debut
+    await dbCall(db, 'run', format(DEBUT_TAG_QUERY, { hash }))
+  }
+
+  /**
+   * rescan existed file,
+   * update hash if size doesn't match record from database
+   * 
+   * @param {object} file 
+   * @memberof Store
+   */
+  async _rescanPicture ({ path }){
+    let db = this.db
+    let realPath = join(this.root, path)
+    let size = await fileSize(realPath)
+
+    let exist = await dbCall(
+      db, 
+      'get', 
+      format(EXISTS_PATH_SIZE_QUERY, { path, size })
+    )
+
+    // if size doesn't match
+    if (!exist){
+      let hash = await md5(realPath)
+
+      // 1. update hash of path
+      await dbCall(db, 'run', format(UPDATE_PATH_QUERY, { hash, path, size }))
+
+      // 2. write debut hash if debut
+      await dbCall(db, 'run', format(DEBUT_TAG_QUERY, { hash }))
+    }
+  }
+
+  /**
+   * scan folder to get all pictures
+   * 
+   * @param {string} path 
+   * @returns {object}
+   * @memberof Store
+   */
+  async _scanFolder (path){
+    let allPaths = await getFiles(path)
+    let picPaths = _.filter(allPaths, file => /\.jpg$|\.png$/i.test(file))
+
+    return await asyncMap(
+      picPaths, 
+      async path => ({ 
+        path, 
+        size: await fileSize(join(this.root, path)) 
+      })
+    )
+  }
+
+  /**
+   * attach url to each picture
+   * 
+   * @param {object[]} pictures 
+   * @returns {object[]}
+   * @memberof Store
+   */
+  _withUrl (pictures) {
+    pictures.forEach(pic => {
+      pic.url = `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
+    })
+
+    return pictures
   }
 }
 
@@ -294,9 +403,11 @@ export async function load(root) {
 //   let at = new Date()
 //   let store = await load('tmp')
 //   let bt = new Date()
-//   await store.removeTag('923cf742b3de2b4e19614abca949d3a3', 'heiheihei')
-//   console.log(await store.search('debut'))
-//   let ct = new Date()
 //   console.log(bt - at)
-//   console.log(ct - bt)
+  
+//   // console.log(await store.all())
+//   // await store.addTag('cc43840a3635933be43f13d0e3a5af2e', 'window')
+//   // await store.removeTag('cc43840a3635933be43f13d0e3a5af2e', 'window')
+//   // console.log(await store.size())
+//   console.log(await store.search('window debut'))
 // })()

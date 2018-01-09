@@ -1,8 +1,10 @@
 import { register } from './manager'
 import { rpc } from './utils'
+import { join } from 'path'
 import { load } from './store'
 import serve from 'serve'
 import _ from 'lodash'
+import { exec } from 'child_process'
 import { SERVER_PORT } from '../app.config.json'
 
 let store = null
@@ -37,7 +39,17 @@ const system = {
     })
 
     rpc.listen('store-remove-tag', async ({ hash, tag }) => {
-      await store.addTag(hash, tag)
+      await store.removeTag(hash, tag)
+    })
+
+    rpc.listen('store-open-picture', async ({ path }) => {
+      let imgPath = join(store.root, path)
+      exec(`"${imgPath}"`)
+    })
+
+    rpc.listen('store-get-tags', async () => {
+      let tags = await store.getTags()
+      rpc.call('store-did-get-tags', { tags })
     })
   },
 

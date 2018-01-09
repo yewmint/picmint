@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
@@ -35,18 +36,17 @@ module.exports = {
   externals: [nodeExternals()],
 
   plugins: [
+    // new webpack.IgnorePlugin(
+    //   /sqlite3/
+    // ),
+
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
       }
     }),
 
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
+    new UglifyJsPlugin(),
 
     new webpack.LoaderOptionsPlugin({
       minimize: true
