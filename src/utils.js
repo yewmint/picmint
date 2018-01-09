@@ -113,6 +113,41 @@ export async function md5 (path){
   })
 }
 
+export async function fileSize (path){
+  if (!existsSync(path)){
+    return Promise.resolve(-1)
+  }
+
+  let status = await stat(path)
+  return status.size
+}
+
+export async function asyncMap (array, mapper){
+  if (!_.isArray(array) || !_.isFunction(mapper)){
+    return Promise.resolve(null)
+  }
+
+  return await Promise.all(array.map(el => mapper(el)))
+}
+
+export function format (template, data){
+  if (!_.isString(template), !_.isObject(data)){
+    return null
+  }
+
+  let str = template
+  _.forOwn(
+    data, 
+    (value, key) => {
+      // ensure replacing all occurance
+      let reg = new RegExp(`\\$${key}`, 'g')
+      str = str.replace(reg, value)
+    }
+  )
+
+  return str
+}
+
 /**
  * listen rpc in main process
  * 
