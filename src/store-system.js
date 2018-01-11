@@ -11,7 +11,7 @@ let store = null
 let server = null
 
 /**
- * expose api to rpc
+ * expose store api to rpc
  */
 const system = {
   enter (){
@@ -22,6 +22,8 @@ const system = {
         server.stop()
       }
 
+      // launch server for static files
+      // usually picture files
       server = serve(path, {
         port: SERVER_PORT
       })
@@ -42,6 +44,7 @@ const system = {
       await store.removeTag(hash, tag)
     })
 
+    // launch picture in default picture viewer
     rpc.listen('store-open-picture', async ({ path }) => {
       let imgPath = join(store.root, path)
       exec(`"${imgPath}"`)
@@ -50,6 +53,11 @@ const system = {
     rpc.listen('store-get-tags', async () => {
       let tags = await store.getTags()
       rpc.call('store-did-get-tags', { tags })
+    })
+
+    rpc.listen('store-batch', async ({contains, adds, removes}) => {
+      await store.batch(contains, adds, removes)
+      rpc.call('store-did-batch')
     })
   },
 

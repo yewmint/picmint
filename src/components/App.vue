@@ -3,7 +3,8 @@
     <Title theme="light" />
     <FullPage :page="page" />
     <Modal :content="Detail" :show="showDetail" />
-    <Modal :content="TagList" :show="showTagList" />
+    <Modal :content="TagList" :show="showTagList" :fullSize="false" />
+    <Modal :content="Batch" :show="showBatch" :fullSize="false" />
   </div>
 </template>
 
@@ -13,13 +14,14 @@ import FullPage from './FullPage'
 import Modal from './Modal'
 import Detail from './Detail'
 import TagList from './TagList'
+import Batch from './Batch'
 
 export default {
   components: { Title, FullPage, Modal },
 
   data (){
     return {
-      Detail, TagList
+      Detail, TagList, Batch
     }
   },
 
@@ -34,6 +36,10 @@ export default {
 
     showTagList (){
       return this.$store.state.tagList.show
+    },
+
+    showBatch (){
+      return this.$store.state.batch.show
     }
   }
 }

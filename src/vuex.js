@@ -6,22 +6,50 @@ import _ from 'lodash'
 
 Vue.use(Vuex)
 
+/**
+ * state store
+ */
 export const store = new Vuex.Store({
   state: {
+    // current shwon page
     page: 'welcome',
+
+    // theme for title, [ light, dark ]
     titleTheme: 'light',
+
+    // text for last searching 
+    lastSearch: '',
+
+    // search results
     pictures: [],
+
+    // all existed tags
+    tags: [],
+
+    // detail modal
     detail: {
       show: false,
+
+      // hash of currently chosen picture
       hash: ''
     },
+
+    // tag list modal
     tagList: {
+      show: false
+    },
+
+    // batch modal
+    batch: {
       show: false,
-      tags: []
+
+      // if batch is executing
+      executing: false
     }
   },
 
   getters: {
+    // get currently chosen picture
     detailPicture ({ pictures, detail: { hash } }){
       return _.find(pictures, { hash })
     }
@@ -34,6 +62,10 @@ export const store = new Vuex.Store({
 
     switchTitleTheme (state, { theme }){
       state.titleTheme = theme
+    },
+
+    setLastSearch (state, { text }){
+      state.lastSearch = text
     },
 
     setPictures (state, { pictures }){
@@ -55,6 +87,7 @@ export const store = new Vuex.Store({
           picture.tags = _(picture.tags)
             .split(/\s+/)
             .push(tag)
+            .compact()
             .join(' ')
         })
     },
@@ -66,12 +99,17 @@ export const store = new Vuex.Store({
           picture.tags = _(picture.tags)
             .split(/\s+/)
             .without(tag)
+            .compact()
             .join(' ')
         })
     },
 
     setTags (state, { tags }){
-      state.tagList.tags = tags
+      state.tags = tags
+    },
+
+    setBatchState (state, payload){
+      _.forOwn(payload, (value, key) => state[key] = value)
     }
   },
 
@@ -82,15 +120,20 @@ export const store = new Vuex.Store({
         properties: [ 'openDirectory' ]
       })
 
+      // in case user cancel dialog
       if (!_.isArray(paths)){
         return 
       }
 
+      // set timeout to finish transition
       setTimeout(() => rpc.call('store-open', { path: paths[0] }), 500)
+
+      // reset delta time to ensure animation starting at begining
       setTimeout(() => commit('switchPage', { page: 'loading' }), 0)
     },
 
     didLoadStore ({ commit }) {
+      rpc.call('store-get-tags')
       commit('switchPage', { page: 'main' })
       commit('switchTitleTheme', { theme: 'dark' })
     },
@@ -100,7 +143,12 @@ export const store = new Vuex.Store({
         return
       }
 
+      commit('setLastSearch', { text })
       rpc.call('store-search', { words: text })
+    },
+
+    refreshSearch (){
+      this.dispatch('search', { text: this.state.lastSearch })
     },
 
     didSearch ({ commit }, { result }){
@@ -126,6 +174,7 @@ export const store = new Vuex.Store({
       }
 
       rpc.call('store-add-tag', { tag, hash })
+      rpc.call('store-get-tags')
       commit('addTag', { tag, hash })
     },
 
@@ -134,34 +183,78 @@ export const store = new Vuex.Store({
         return
       }
 
-      // check if tag exists
+      // check if tag doesn't exists
       if (!tagExists(tag)){
         return
       }
 
       rpc.call('store-remove-tag', { tag, hash })
+      rpc.call('store-get-tags')
       commit('removeTag', { tag, hash })
+
+      // if no tag available, add special tag to avoid bug
+      if (this.getters.detailPicture.tags.trim().length === 0){
+        this.dispatch('addTag', { tag: 'no-tag', hash })
+      }
     },
 
     openPicture (store, { path }){
       rpc.call('store-open-picture', { path })
     },
 
-    openTagList ({ commit }){
-      rpc.call('store-get-tags')
-      commit('toggleModal', { name: 'tagList' })
-    },
-
-    closeTagList ({commit}){
+    toggleTagList ({ commit }){
       commit('toggleModal', { name: 'tagList' })
     },
 
     setTags ({ commit }, { tags }){
       commit('setTags', { tags })
+    },
+
+    toggleBatch ({ commit }){
+      commit('toggleModal', { name: 'batch' })
+    },
+
+    runBatch ({ commit }, { contains, adds, removes }){
+      contains = polishTags(contains)
+      adds = polishTags(adds)
+      removes = polishTags(removes)
+
+      rpc.call('store-batch', { contains, adds, removes })
+
+      // keep user waiting for finishing
+      commit('setBatchState', { executing: true })
+    },
+
+    didBatch ({ commit }){
+      commit('setBatchState', { executing: false })
+
+      // refresh search to update tags
+      this.dispatch('refreshSearch')
+
+      this.dispatch('toggleBatch')
     }
   }
 })
 
+/**
+ * clear odd spaces
+ * 
+ * @param {string} tags 
+ * @returns {string}
+ */
+function polishTags (tags){
+  return _(tags)
+    .split(/\s+/)
+    .compact()
+    .join('\n')
+}
+
+/**
+ * if tag exists in currently chosen picture
+ * 
+ * @param {string} tag 
+ * @returns {bool}
+ */
 function tagExists(tag){
   let { tags } = store.getters.detailPicture
   return _(tags).split(/\s+/).indexOf(tag) !== -1
@@ -180,4 +273,9 @@ rpc.listen('store-did-search', ({ result }) => {
 // listen did get tags event
 rpc.listen('store-did-get-tags', ({ tags }) => {
   store.dispatch('setTags', { tags })
+})
+
+// listen did batch event
+rpc.listen('store-did-batch', () => {
+  store.dispatch('didBatch')
 })

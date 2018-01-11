@@ -1,15 +1,14 @@
 {
   "name": "picmint",
-  "version": "3.0.0",
-  "description": "tag based picture management application",
+  "version": "3.1.0",
+  "description": "tag based picture manager",
   "author": "yewmint <yewmint@outlook.com>",
   "license": "MIT",
   "main": "app/main.js",
-  "private": true,
   "scripts": {
     "lint": "eslint src",
-    "clean": "rimraf app/*",
-    "build": "yarn run lint && yarn run build:main && yarn run build:renderer",
+    "clean": "rimraf app/* && rimraf bundle/*",
+    "build": "yarn run lint && yarn run build:main && yarn run build:renderer && yarn run app:deps && yarn run pack",
     "rebuild": "yarn run clean && yarn run build",
     "build:main": "cross-env NODE_ENV=production webpack --hide-modules --config config/main.config.production.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --hide-modules --config config/renderer.config.production.js",
@@ -42,7 +41,8 @@
     "serve": "^6.4.3",
     "sqlite3": "^3.1.13",
     "vue": "^2.5.13",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "winston": "^2.4.0"
   },
   "browserslist": [
     "> 1%",
@@ -94,7 +94,8 @@
           "target": "dir",
           "arch": "x64"
         }
-      ]
+      ],
+      "icon": "app/icon.ico"
     },
     "files": "**/*",
     "asar": false

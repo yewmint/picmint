@@ -1,3 +1,7 @@
+/**
+ * manage life cycle of systems
+ */
+
 import _ from 'lodash'
 
 let systems = []
@@ -21,5 +25,6 @@ export function exit (){
     }
   })
 
+  // clean refs
   systems = []
 }

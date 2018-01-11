@@ -3,7 +3,7 @@
     <div class="title-bar">
       <div class="control-wrapper">
         <div class="batch-wrapper">
-          <button>
+          <button @click="handleBatch">
             <i class="material-icons">card_travel</i>
           </button>
         </div>
@@ -33,6 +33,10 @@
 <script>
 import List from './List'
 
+/**
+ * main page for managing pictures
+ * mainly for searching
+ */
 export default {
   components: {
     List
@@ -55,7 +59,11 @@ export default {
     },
 
     handleTags (){
-      this.$store.dispatch('openTagList')
+      this.$store.dispatch('toggleTagList')
+    },
+
+    handleBatch (){
+      this.$store.dispatch('toggleBatch')
     }
   }
 }

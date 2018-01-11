@@ -20,6 +20,10 @@ import config from '../../app.config.json'
 
 const win = remote.getCurrentWindow()
 
+/**
+ * title component on the top most layer
+ * simulate windows title
+ */
 export default {
   components: { TitleButton },
   

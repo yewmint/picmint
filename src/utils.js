@@ -113,6 +113,13 @@ export async function md5 (path){
   })
 }
 
+/**
+ * get file size of path
+ * 
+ * @export
+ * @param {string} path 
+ * @returns {number}
+ */
 export async function fileSize (path){
   if (!existsSync(path)){
     return Promise.resolve(-1)
@@ -122,6 +129,14 @@ export async function fileSize (path){
   return status.size
 }
 
+/**
+ * invoke map for async mapper
+ * 
+ * @export
+ * @param {object[]} array 
+ * @param {async function} mapper 
+ * @returns {Promise<any[]>}
+ */
 export async function asyncMap (array, mapper){
   if (!_.isArray(array) || !_.isFunction(mapper)){
     return Promise.resolve(null)
@@ -130,6 +145,14 @@ export async function asyncMap (array, mapper){
   return await Promise.all(array.map(el => mapper(el)))
 }
 
+/**
+ * format string using key-value pairs
+ * 
+ * @export
+ * @param {string} template 
+ * @param {object} data 
+ * @returns {string}
+ */
 export function format (template, data){
   if (!_.isString(template), !_.isObject(data)){
     return null

@@ -25,6 +25,10 @@ function fadeIn (el) {
   }).start(styler(el).set)
 }
 
+/**
+ * show full page content
+ * perform transition when entering
+ */
 export default {
   props: {
     page: String

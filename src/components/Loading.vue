@@ -24,6 +24,9 @@ function rotate (el) {
   }).start(styler(el).set('rotate'))
 }
 
+/**
+ * loading page
+ */
 export default {
   mounted (){
     rotate(this.$refs.loadingIcon)

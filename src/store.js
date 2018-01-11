@@ -5,6 +5,7 @@
 
 import { getFiles, md5, fileSize, asyncMap, format } from './utils'
 import { join } from 'path'
+import winston from 'winston'
 import _ from 'lodash'
 import sqlite from 'sqlite3'
 import { SERVER_PORT } from '../app.config.json'
@@ -74,6 +75,12 @@ SELECT 'debut' tag, '$hash' hash
 WHERE NOT EXISTS (SELECT * FROM tags WHERE hash = '$hash' LIMIT 1)
 `
 
+const ADD_NO_TAG_QUERY = `
+INSERT INTO tags 
+SELECT 'no-tag' tag, '$hash' hash
+WHERE NOT EXISTS (SELECT * FROM tags WHERE hash = '$hash' LIMIT 1)
+`
+
 const ADD_TAG_QUERY = `
 INSERT INTO tags 
 SELECT '$tag' tag, '$hash' hash
@@ -117,8 +124,8 @@ function dbCall(db, funcName, ...rest) {
       else resolve(data)
     })
   ).catch(err => {
-    console.error(err)
-    console.error(funcName, ...rest)
+    winston.error(err)
+    winston.error(funcName, ...rest)
   })
 }
 
@@ -285,6 +292,50 @@ class Store {
   }
 
   /**
+   * get hashes by tags
+   * 
+   * @param {string} [tags=''] 
+   * @returns {string[]}
+   * @memberof Store
+   */
+  async getHash (tags = ''){
+    if (tags.trim().length === 0){
+      return []
+    }
+
+    let db = this.db
+
+    let hashQuery = _(tags)
+      .split(/\s+/)
+      .compact()
+      .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
+      .join('\nINTERSECT\n')
+    
+    return _.map(await dbCall(db, 'all', hashQuery), 'hash')
+  }
+
+  /**
+   * batch task
+   * remove 'removes' and add 'adds' into pictures containing 'contains'
+   * 
+   * @param {string} contains 
+   * @param {string} adds 
+   * @param {string} removes 
+   * @memberof Store
+   */
+  async batch (contains = '', adds = '', removes = ''){
+    let hashes = await this.getHash(contains)
+    let addTags = _(adds).split(/\s+/).compact().value()
+    let removeTags = _(removes).split(/\s+/).compact().value()
+
+    await asyncMap(hashes, async hash => {
+      await asyncMap(addTags, async tag => await this.addTag(hash, tag))
+      await asyncMap(removeTags, async tag => await this.removeTag(hash, tag))
+      await dbCall(this.db, 'run', format(ADD_NO_TAG_QUERY, { hash }))
+    })
+  }
+
+  /**
    * setup lowdb database
    *
    * @memberof Store
@@ -405,9 +456,10 @@ export async function load(root) {
 //   let bt = new Date()
 //   console.log(bt - at)
   
-//   // console.log(await store.all())
+//   // winston.log(await store.all())
 //   // await store.addTag('cc43840a3635933be43f13d0e3a5af2e', 'window')
 //   // await store.removeTag('cc43840a3635933be43f13d0e3a5af2e', 'window')
-//   // console.log(await store.size())
-//   console.log(await store.search('window debut'))
+//   // winston.log(await store.size())
+//   // winston.log(await store.search('window debut'))
+//   await store.batch('window glow', 'kkk wkk', 'kk')
 // })()

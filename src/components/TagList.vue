@@ -23,21 +23,25 @@
 </template>
 
 <script>
+/**
+ * tag list in detail page
+ * add ande remove tag of current picture
+ */
 export default {
   methods: {
     handleBack (){
-      this.$store.dispatch('closeTagList')
+      this.$store.dispatch('toggleTagList')
     },
 
     handleTag (tag){
-      this.$store.dispatch('closeTagList')
+      this.$store.dispatch('toggleTagList')
       this.$store.dispatch('search', { text: tag })
     }
   },
 
   computed: {
     tags (){
-      return this.$store.state.tagList.tags.sort()
+      return this.$store.state.tags.sort()
     }
   }
 }
@@ -68,12 +72,19 @@ export default {
   overflow-y: auto
 
 .tags-container
+  text-align: center
   padding: 10px 20px
 
   & button
     @extend %btn
+    background-color: #00a3af
+    color: white;
     width: initial
     padding: 4px 8px
     box-shadow: 0 3px 8px 1px #aaaaaa
     margin: 10px 10px
+
+    &:hover
+      background-color: #148992
+      transform: translateY(-5px)
 </style>

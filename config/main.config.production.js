@@ -23,10 +23,10 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|gif|svg|ico)$/,
         loader: 'file-loader',
         options: {
-          name: '[name].[ext]?[hash]',
+          name: '[name].[ext]',
           outputPath: './img/'
         }
       }
@@ -56,6 +56,9 @@ module.exports = {
       dirs: []
     }),
 
-    new CopyWebpackPlugin([{ from: 'src/package.json', to: '.' }])
+    new CopyWebpackPlugin([
+      { from: 'src/package.json', to: '.' },
+      { from: 'src/assets/icon.ico', to: '.' }
+    ])
   ]
 }

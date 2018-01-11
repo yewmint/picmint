@@ -10,6 +10,9 @@
 </template>
 
 <script>
+/**
+ * welcome page to instruct user to open store
+ */
 export default {
   methods: {
     handleOpen (){

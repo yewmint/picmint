@@ -1,38 +1,50 @@
 import 'babel-polyfill'
-import { app, BrowserWindow, nativeImage, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, nativeImage } from 'electron'
 import { format } from 'url'
 import { join } from 'path'
 import { exec } from 'child_process'
+import winston from 'winston'
 import * as manager from './manager'
 import './store-system'
+import './log'
 
 import settings from '../app.config.json'
-import iconPath from './assets/icon@0.125x.png'
+import iconPath from './assets/icon.ico'
 
-process.on('uncaughtException', () => {
+// write any exception into winston
+process.on('uncaughtException', error => {
+  winston.error('uncaughtException')
+  winston.error(error)
   process.abort()
 })
+
+// return index path depending on environment
+function getIndexPath (){
+  if (process.env.NODE_ENV === 'production'){
+    return format({
+      pathname: join(app.getAppPath(), 'index.html'),
+      protocol: 'file:',
+      slashes: true
+    })
+  }
+  else {
+    return format({
+      pathname: 'index.html',
+      hostname: 'localhost',
+      port: 8080,
+      protocol: 'http:',
+      slashes: true
+    })
+  }
+}
 
 let win
 let icon = nativeImage.createFromPath(iconPath)
 
+// create window and start system manager
 function createWindow() {
-  const FILE_PATH = format({
-    pathname: join(app.getAppPath(), 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  })
-  
-  const HTTP_PATH = format({
-    pathname: 'index.html',
-    hostname: 'localhost',
-    port: 8080,
-    protocol: 'http:',
-    slashes: true
-  })
-  
-  const PATH = process.env.NODE_ENV === 'production' ? FILE_PATH : HTTP_PATH
-  
+  winston.info('app started.')
+
   manager.enter()
 
   win = new BrowserWindow({
@@ -48,7 +60,9 @@ function createWindow() {
     show: false
   })
 
-  win.loadURL(PATH)
+  let path = getIndexPath()
+  win.loadURL(path)
+  // win.webContents.openDevTools()
   if (process.env['NODE_ENV'] !== 'production') {
     win.webContents.openDevTools()
   }
@@ -59,28 +73,30 @@ function createWindow() {
     app.quit()
   })
 
+  // show window after first rendering
   win.once('ready-to-show', () => {
     win.show()
   })
 
   let content = win.webContents
 
-  content.on('crashed', () => {
+  content.on('crashed', error => {
+    winston.error('crashed')
+    winston.error(error)
     process.abort()
   })
 
-  content.on('did-fail-load', () => {
+  content.on('did-fail-load', error => {
+    winston.error('did-fail-load')
+    winston.error(error)
     process.abort()
-  })
-
-  ipcMain.on('open-image', (ev, url) => {
-    let imgPath = join(process.resourcesPath, 'app', url)
-    exec(`start ${imgPath}`)
   })
 }
 
 app.on('ready', createWindow)
 
-app.on('gpu-process-crashed', () => {
+app.on('gpu-process-crashed', error => {
+  winston.error('gpu-process-crashed')
+  winston.error(error)
   process.abort()
 })

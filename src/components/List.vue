@@ -68,6 +68,9 @@ function fadeIn (el) {
   })
 }
 
+/**
+ * list for search result
+ */
 export default {
   data (){
     return {
@@ -82,9 +85,14 @@ export default {
       )
     },
 
+    allPictures (){
+      return this.$store.state.pictures
+    },
+
+    // pictures in current page
     pictures (){
       return _.chunk(
-        this.$store.state.pictures, NUM_PER_PAGE
+        this.allPictures, NUM_PER_PAGE
       )[this.page]
     }
   },
@@ -117,7 +125,10 @@ export default {
   },
 
   watch: {
-    pictures (){
+    // item may remain unchanged as search occured
+    // invoke fadeList() to force fadein transition
+    allPictures (){
+      this.page = 0
       this.fadeList()
     }
   }

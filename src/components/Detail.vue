@@ -11,10 +11,25 @@
       </div>
       <div class="tag-section">
         <form class="tag-new" @submit="handleAdd">
-          <input v-model="newTag" placeholder="New tag"/>
+          <input 
+            v-model="newTag" 
+            placeholder="New tag"
+            maxlength="14"
+            type="text"
+            @keydown="handleInputKeyDown"
+          />
           <button type="submit" class="add">
             <i class="material-icons">add</i>
           </button>
+          <transition name="hint-list">
+            <div v-if="showInpuHint && hints.length > 0" class="hint-list">
+              <p 
+                v-for="(hint, index) in hints" 
+                :key="hint" 
+                :class="index === hintIndex && 'selected'"
+              >{{ hint }}</p>
+            </div>
+          </transition>
         </form>
         <transition-group class="tag-list" name="tag-list" tag="div">
           <div 
@@ -44,16 +59,38 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
+const INPUT_KEYS = [
+  'Tab', 'ArrowUp', 'ArrowDown'
+]
+
+/**
+ * modal for detail infomations of chosen picture
+ */
 export default {
   data (){
     return {
-      newTag: ''
+      newTag: '',
+
+      hints: [],
+
+      // index of currently chosen hint
+      hintIndex: 0
     }
   },
 
   computed: {
     picture (){
       return this.$store.getters.detailPicture
+    },
+
+    allTags (){
+      return this.$store.state.tags
+    },
+
+    showInpuHint (){
+      return this.newTag.trim().length > 0
     }
   },
 
@@ -90,6 +127,44 @@ export default {
       this.$store.dispatch('openPicture', {
         path: this.picture.path 
       })
+    },
+
+    // capture up, down and tab key to control hints list
+    handleInputKeyDown (ev){
+      if (_.indexOf(INPUT_KEYS, ev.key) !== -1){
+        ev.preventDefault()
+        this[`handle${ev.key}`]()
+      }
+    },
+
+    // tap tab to apply current hint
+    handleTab (){
+      this.newTag = this.hints[this.hintIndex] + ' '
+    },
+
+    // tap up to navigate to previous hint
+    handleArrowUp (){
+      this.hintIndex = _.max([0, this.hintIndex - 1])
+    },
+
+    // tap donw to navigate to next hint
+    handleArrowDown (){
+      this.hintIndex = _.min(
+        [this.hints.length - 1, this.hintIndex + 1]
+      )
+    }
+  },
+
+  watch: {
+    // detect change of input to rehint
+    newTag (){
+      let currentInput = _.replace(this.newTag, /\s+/g, '-')
+      
+      this.hintIndex = 0
+      this.hints = _.filter(
+        this.allTags, 
+        tag => _.startsWith(tag, currentInput)
+      )
     }
   }
 }
@@ -129,6 +204,7 @@ export default {
   @extend %btn
 
 .tag-new
+  position: relative
   display: grid
   grid-template-columns: auto 32px
   grid-template-rows: 32px
@@ -150,6 +226,31 @@ export default {
 
     & i
       color: #fff
+
+.hint-list
+  z-index: 200
+  position: absolute
+  top: 32px
+  width: 184px
+  background-color: #ffffff
+  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.28)
+
+  & p
+    margin: 0
+    padding: 4px 8px
+
+    &.selected
+      background-color: #cccccc
+
+.hint-list-enter, .hint-list-leave-to
+  opacity: 0
+  transform: translateY(-10px)
+
+.hint-list-enter-active
+  transition: all 0.1s cubic-bezier(0.0, 0.0, 0.2, 1)
+
+.hint-list-leave-active
+  transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1)
 
 .tag-section
   padding: 12px

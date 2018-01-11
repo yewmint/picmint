@@ -7,6 +7,9 @@
 <script>
 import _ from 'lodash'
 
+/**
+ * simulate minimize, maximize and close button
+ */
 export default {
   props: {
     theme: { type: String, default: 'light' },
