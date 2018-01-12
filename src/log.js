@@ -1,10 +1,16 @@
 import winston from 'winston'
-import { createWriteStream } from 'fs'
 
-// redirect winston to file
-winston.add(winston.transports.File, { filename: 'app.log' })
-winston.remove(winston.transports.Console)
+export const logger = new (winston.Logger)({
+  transports: [
+    new (winston.transports.File)({ 
+      filename: 'app.log',
+      timestamp: function() {
+        return (new Date).toString()
+      } 
+    })
+  ]
+})
 
-// redirect stdout to file
-let stream = createWriteStream('err.log', { flags: 'a+' })
-process.stdout.write = process.stderr.write = stream.write.bind(stream)
+logger.handleExceptions(
+  new winston.transports.File({ filename: 'exceptions.log' })
+)

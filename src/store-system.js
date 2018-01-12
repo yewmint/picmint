@@ -2,10 +2,10 @@ import { register } from './manager'
 import { rpc } from './utils'
 import { join } from 'path'
 import { load } from './store'
-import serve from 'serve'
+// import serve from 'serve'
 import _ from 'lodash'
 import { exec } from 'child_process'
-import { SERVER_PORT } from '../app.config.json'
+// import { SERVER_PORT } from '../app.config.json'
 
 let store = null
 let server = null
@@ -18,15 +18,15 @@ const system = {
     rpc.listen('store-open', async ({ path }) => {
       store = await load(path)
 
-      if (server && _.isFunction(server.stop)){
-        server.stop()
-      }
+      // if (server && _.isFunction(server.stop)){
+      //   server.stop()
+      // }
 
-      // launch server for static files
-      // usually picture files
-      server = serve(path, {
-        port: SERVER_PORT
-      })
+      // // launch server for static files
+      // // usually picture files
+      // server = serve(path, {
+      //   port: SERVER_PORT
+      // })
 
       rpc.call('store-did-open')
     })

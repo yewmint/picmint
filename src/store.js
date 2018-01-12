@@ -5,10 +5,12 @@
 
 import { getFiles, md5, fileSize, asyncMap, format } from './utils'
 import { join } from 'path'
-import winston from 'winston'
+import url from 'url'
+import { logger } from './log'
+// import winston from 'winston'
 import _ from 'lodash'
 import sqlite from 'sqlite3'
-import { SERVER_PORT } from '../app.config.json'
+// import { SERVER_PORT } from '../app.config.json'
 
 const CREATE_TABLE_QUERY = `
 PRAGMA encoding = "UTF-8";
@@ -124,8 +126,7 @@ function dbCall(db, funcName, ...rest) {
       else resolve(data)
     })
   ).catch(err => {
-    winston.error(err)
-    winston.error(funcName, ...rest)
+    logger.error('ERROR in dbCall', { ...rest, funcName, err })
   })
 }
 
@@ -430,7 +431,16 @@ class Store {
    */
   _withUrl (pictures) {
     pictures.forEach(pic => {
-      pic.url = `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
+      let picUrl = url.format({
+        pathname: join(this.root, pic.path),
+        protocol: 'file:',
+        slashes: true
+      })
+
+      // trick to make url work in background-image: url()
+      pic.url = _.replace(picUrl, /\\/g, '/')
+      
+      // `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
     })
 
     return pictures

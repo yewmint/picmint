@@ -98,6 +98,6 @@
       "icon": "app/icon.ico"
     },
     "files": "**/*",
-    "asar": false
+    "asar": true
   }
 }
