@@ -2,6 +2,8 @@
 
 > A tag based picture manager
 
+[Release Page](/yewmint/picmint/releases)
+
 ## Feature
 
 1. Manage pictures in place, won't damage any of your treasures.
