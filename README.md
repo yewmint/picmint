@@ -2,7 +2,7 @@
 
 > A tag based picture manager
 
-[Release Page](/yewmint/picmint/releases)
+Download prebuilt binary distribution at [Release Page](https://github.com/yewmint/picmint/releases)
 
 ## Feature
 
