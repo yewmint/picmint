@@ -13,7 +13,7 @@
       >
         <div 
           class="thumbnail" 
-          :style="`background-image: url('${picture.url}')`"
+          :style="`background-image: url('${picture.thumbUrl}')`"
           @click="() => clickHandler(picture.hash)" 
         ></div>
       </div>

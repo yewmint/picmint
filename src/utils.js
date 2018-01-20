@@ -49,6 +49,19 @@ export const stat = promisify(fs.stat)
 export const readFile = promisify(fs.readFile)
 
 /**
+ * promisified mkdir
+ * 
+ * @export
+ */
+export const mkdir = promisify(fs.mkdir)
+
+// exclude for getFiles
+const EXCLUDE_DIRS = [
+  '.thumbs',
+  'System Volumn Information'
+]
+
+/**
  * get all file paths in a directory
  * recursively
  * 
@@ -67,9 +80,14 @@ export async function getFiles (root, path = '.'){
   let status = await stat(curPath)
 
   if (status.isFile()){
-    return [ path ]
+    return [ { path, size: status.size } ]
   }
   else if (status.isDirectory()){
+    // if path is a hidden directory
+    if (EXCLUDE_DIRS.indexOf(path) !== -1){
+      return []
+    }
+
     let subpaths = await readdir(curPath)
 
     // parallelly search all sub paths
@@ -169,6 +187,15 @@ export function format (template, data){
   )
 
   return str
+}
+
+/**
+ * ensure dir exists
+ */
+export async function ensureDir (path){
+  if (!existsSync(path)){
+    await mkdir(path)
+  }
 }
 
 /**

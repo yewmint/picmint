@@ -186,9 +186,10 @@ export default {
   
 .picture
   cursor: pointer
-  background-color: #ababab
-  background-size: cover
+  background-color: #737373
+  background-size: contain
   background-position: center
+  background-repeat: no-repeat
 
 .tag-title
   display: grid

@@ -3,14 +3,18 @@
  * @author yewmint
  */
 
-import { getFiles, md5, fileSize, asyncMap, format } from './utils'
+import { getFiles, md5, asyncMap, format, ensureDir } from './utils'
+import { existsSync } from 'fs'
 import { join } from 'path'
 import url from 'url'
 import { logger } from './log'
 // import winston from 'winston'
 import _ from 'lodash'
 import sqlite from 'sqlite3'
+import sharp from 'sharp'
 // import { SERVER_PORT } from '../app.config.json'
+
+sharp.cache(false)
 
 const CREATE_TABLE_QUERY = `
 PRAGMA encoding = "UTF-8";
@@ -163,16 +167,27 @@ class Store {
    */
   async scan() {
     await this._setupDB()
-
     let db = this.db
+
+    let tsa = new Date
+
+    this.thumbDir = join(this.root, '.thumbs/')
+    await ensureDir(this.thumbDir)
 
     let existFiles = await this._scanFolder (this.root)
     let savedFiles = await dbCall(db, 'all', GET_ALL_PATH_QUERY)
+    
+    let tsb = new Date
 
     let debutFiles = _.differenceBy(existFiles, savedFiles, 'path')
     let vanishedFiles = _.differenceBy(savedFiles, existFiles, 'path')
-    let otherFiles = _.intersectionBy(existFiles, savedFiles, 'path')
+    let modifiedFiles = _.filter(existFiles, file => {
+      return _.find(savedFiles, ({ path, size }) => (
+        file.path === path && file.size !== size
+      ))
+    })
 
+    let tsc = new Date
     // scan debut files and push into pictures and tags
     await asyncMap(
       debutFiles, 
@@ -181,6 +196,7 @@ class Store {
       }
     )
 
+    let tsd = new Date
     // remove vanished files
     await asyncMap(
       vanishedFiles,
@@ -189,13 +205,23 @@ class Store {
       }
     )
 
+    let tse = new Date
+    // console.log(modifiedFiles.length)
     // rescan existed files
     await asyncMap(
-      otherFiles,
-      async otherFile => {
-        await this._rescanPicture(otherFile)
+      modifiedFiles,
+      async file => {
+        await this._rescanPicture(file)
       }
     )
+    
+    let tsf = new Date
+
+    console.log(`b: ${tsb - tsa}ms`)
+    console.log(`c: ${tsc - tsb}ms`)
+    console.log(`d: ${tsd - tsc}ms`)
+    console.log(`e: ${tse - tsd}ms`)
+    console.log(`f: ${tsf - tse}ms`)
   }
 
   /**
@@ -370,6 +396,25 @@ class Store {
 
     // 2. write debut hash if debut
     await dbCall(db, 'run', format(DEBUT_TAG_QUERY, { hash }))
+
+    // 3. generate thumbnail
+    await this._generateThumbnail({ path: realPath, hash })
+  }
+
+
+  async _generateThumbnail ({ path, hash }){
+    let thumbPath = join(this.thumbDir, `${hash}.jpg`)
+
+    // if thumbnail exist
+    if (existsSync(thumbPath)){
+      return
+    }
+
+    await sharp(path)
+      .resize(160, 160)
+      .min()
+      .crop()
+      .toFile(thumbPath)
   }
 
   /**
@@ -379,27 +424,20 @@ class Store {
    * @param {object} file 
    * @memberof Store
    */
-  async _rescanPicture ({ path }){
+  async _rescanPicture ({ path, size }){
     let db = this.db
     let realPath = join(this.root, path)
-    let size = await fileSize(realPath)
 
-    let exist = await dbCall(
-      db, 
-      'get', 
-      format(EXISTS_PATH_SIZE_QUERY, { path, size })
-    )
+    let hash = await md5(realPath)
 
-    // if size doesn't match
-    if (!exist){
-      let hash = await md5(realPath)
+    // 1. update hash of path
+    await dbCall(db, 'run', format(UPDATE_PATH_QUERY, { hash, path, size }))
 
-      // 1. update hash of path
-      await dbCall(db, 'run', format(UPDATE_PATH_QUERY, { hash, path, size }))
+    // 2. write debut hash if debut
+    await dbCall(db, 'run', format(DEBUT_TAG_QUERY, { hash }))
 
-      // 2. write debut hash if debut
-      await dbCall(db, 'run', format(DEBUT_TAG_QUERY, { hash }))
-    }
+    // 3. generate thumbnail
+    await this._generateThumbnail({ path: realPath, hash })
   }
 
   /**
@@ -410,16 +448,10 @@ class Store {
    * @memberof Store
    */
   async _scanFolder (path){
-    let allPaths = await getFiles(path)
-    let picPaths = _.filter(allPaths, file => /\.jpg$|\.png$/i.test(file))
+    let allFiles = await getFiles(path)
+    let picFiles = _.filter(allFiles, ({ path }) => /\.jpg$|\.png$/i.test(path))
 
-    return await asyncMap(
-      picPaths, 
-      async path => ({ 
-        path, 
-        size: await fileSize(join(this.root, path)) 
-      })
-    )
+    return picFiles
   }
 
   /**
@@ -437,8 +469,15 @@ class Store {
         slashes: true
       })
 
+      let thumbUrl = url.format({
+        pathname: join(this.thumbDir, `${pic.hash}.jpg`),
+        protocol: 'file:',
+        slashes: true
+      })
+
       // trick to make url work in background-image: url()
       pic.url = _.replace(picUrl, /\\/g, '/')
+      pic.thumbUrl = _.replace(thumbUrl, /\\/g, '/')
       
       // `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
     })
