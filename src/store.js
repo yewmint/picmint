@@ -425,6 +425,7 @@ class Store {
     let hashQuery = _(tags)
       .split(/\s+/)
       .compact()
+      .map(word => _.replace(word, '\'', '\'\''))
       .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
       .join('\nINTERSECT\n')
     
@@ -503,6 +504,9 @@ class Store {
     let realPath = join(this.root, path)
     let hash = await md5(realPath)
 
+    // escape sql
+    path = _.replace(path, '\'', '\'\'')
+
     // 1. write path
     await dbCall(db, 'run', format(INSERT_PATH_QUERY, { path, hash, size }))
 
@@ -552,6 +556,9 @@ class Store {
     let realPath = join(this.root, path)
 
     let hash = await md5(realPath)
+
+    // escape sql
+    path = _.replace(path, '\'', '\'\'')
 
     // 1. update hash of path
     await dbCall(db, 'run', format(UPDATE_PATH_QUERY, { hash, path, size }))
