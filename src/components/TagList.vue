@@ -81,7 +81,7 @@ export default {
     color: white;
     width: initial
     padding: 4px 8px
-    box-shadow: 0 3px 8px 1px #aaaaaa
+    box-shadow: 0 1px 2px 1px #aaaaaa
     margin: 10px 10px
 
     &:hover

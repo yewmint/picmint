@@ -69,14 +69,23 @@ const HASH_BY_TAG_QUERY = `
 SELECT hash FROM tags WHERE tag = '$tag' GROUP BY hash
 `
 
-const HASHTAGS_BY_HASHES_QUERY = `
-SELECT T1.hash, GROUP_CONCAT(tags.tag, ' ') tags
+// get (hash, tags) by hash
+const HASH_TAGS_QUERY = `
+SELECT hash, GROUP_CONCAT(tags.tag, ' ') tags
 FROM tags
-JOIN ($subquery) AS T1
-ON T1.hash = tags.hash
-GROUP BY T1.hash
+WHERE hash = '$hash'
+GROUP BY hash
 `
 
+// const HASHTAGS_BY_HASHES_QUERY = `
+// SELECT T1.hash, GROUP_CONCAT(tags.tag, ' ') tags
+// FROM tags
+// JOIN ($subquery) AS T1
+// ON T1.hash = tags.hash
+// GROUP BY T1.hash
+// `
+
+// get (path, hash, tags) by sub query of (hash, tags)
 const PICTURE_BY_HASHTAGS_QUERY = `
 SELECT paths.hash, paths.path, T2.tags
 FROM paths
@@ -109,12 +118,12 @@ DELETE FROM tags
 WHERE tag = '$tag' AND hash = '$hash'
 `
 
-const EXISTS_PATH_SIZE_QUERY = `
-SELECT 1 
-WHERE EXISTS(
-  SELECT * FROM paths WHERE path = '$path' AND size = $size LIMIT 1
-)
-`
+// const EXISTS_PATH_SIZE_QUERY = `
+// SELECT 1 
+// WHERE EXISTS(
+//   SELECT * FROM paths WHERE path = '$path' AND size = $size LIMIT 1
+// )
+// `
 
 const UPDATE_PATH_QUERY = `
 UPDATE paths SET hash = '$hash', size = '$size' WHERE path = '$path'
@@ -122,6 +131,19 @@ UPDATE paths SET hash = '$hash', size = '$size' WHERE path = '$path'
 
 const TAGS_QUERY = `
 SELECT tag FROM tags GROUP BY tag
+`
+
+// search hashes from tags with pagination
+const SEARCH_HASHES_PAGE_QUERY = `
+SELECT hash
+FROM ($subquery)
+LIMIT $limit OFFSET $offset
+`
+
+// result number from tags
+const SEARCH_TOTAL_NUMBER_QUERY = `
+SELECT COUNT(*) total
+FROM ($subquery)
 `
 
 /**
@@ -284,14 +306,55 @@ class Store {
     return result.size
   }
 
+  // /**
+  //  * search pictures of specified tags
+  //  *
+  //  * @param {string} [text='']
+  //  * @returns {object[]}
+  //  * @memberof Store
+  //  */
+  // async search(text = '') {
+  //   let db = this.db
+
+  //   // tags are separated by space char
+  //   // escape single quote of sql
+  //   let tags = _(text)
+  //     .split(/\s+/)
+  //     .compact()
+  //     .map(word => _.replace(word, '\'', '\'\''))
+  //     .value()
+
+  //   // construct query
+  //   // 1. query to select hash containing all tags
+  //   let hashesQuery = tags
+  //     .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
+  //     .join('\nINTERSECT\n')
+
+  //   // 2. query to concat tags of hash
+  //   let hashTagsQuery = format(
+  //     HASHTAGS_BY_HASHES_QUERY, { subquery: hashesQuery }
+  //   )
+
+  //   // 3. query to join path and tag
+  //   let pictureQuery = format(
+  //     PICTURE_BY_HASHTAGS_QUERY, { subquery: hashTagsQuery }
+  //   )
+
+  //   let pics = await dbCall(db, 'all', pictureQuery)
+
+  //   return this._withUrl(pics)
+  // }
+
   /**
-   * search pictures of specified tags
-   *
-   * @param {string} [text='']
+   * search pictures of specified tags with pagination
+   * 
+   * @param {string} [text=''] 
+   * @param {number} [page=1] 
+   * @param {number} [pageSize=36] 
    * @returns {object[]}
    * @memberof Store
    */
-  async search(text = '') {
+  async searchPage (text = '', page = 1, pageSize = 36){
     let db = this.db
 
     // tags are separated by space char
@@ -308,19 +371,30 @@ class Store {
       .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
       .join('\nINTERSECT\n')
 
-    // 2. query to concat tags of hash
-    let hashTagsQuery = format(
-      HASHTAGS_BY_HASHES_QUERY, { subquery: hashesQuery }
+    // 2. query to get paginated hashes
+    let pageHashesQuery = format(
+      SEARCH_HASHES_PAGE_QUERY, { 
+        subquery: hashesQuery,
+        limit: pageSize,
+        offset: pageSize * (page - 1)
+      }
     )
 
-    // 3. query to join path and tag
-    let pictureQuery = format(
-      PICTURE_BY_HASHTAGS_QUERY, { subquery: hashTagsQuery }
+    let pics = await dbCall(db, 'all', pageHashesQuery)
+
+    // 3. get total number of hashes
+    let numberHashesQuery = format(
+      SEARCH_TOTAL_NUMBER_QUERY, {
+        subquery: hashesQuery
+      }
     )
 
-    let pics = await dbCall(db, 'all', pictureQuery)
+    let { total } = await dbCall(db, 'get', numberHashesQuery)
 
-    return this._withUrl(pics)
+    return {
+      pics: this._withThumbUrl(pics),
+      total
+    }
   }
 
   /**
@@ -355,6 +429,21 @@ class Store {
       .join('\nINTERSECT\n')
     
     return _.map(await dbCall(db, 'all', hashQuery), 'hash')
+  }
+
+  async getPicture (hash){
+    let hashTagsQuery = format(HASH_TAGS_QUERY, { hash })
+    let pictureQuery = format(PICTURE_BY_HASHTAGS_QUERY, {
+      subquery: hashTagsQuery
+    })
+    
+    let pic = await dbCall(this.db, 'get', pictureQuery)
+
+    if (!_.isObject(pic)){
+      return null
+    }
+
+    return this._withUrl([ pic ])[0]
   }
 
   /**
@@ -486,6 +575,24 @@ class Store {
         slashes: true
       })
 
+      // trick to make url work in background-image: url()
+      pic.url = _.replace(picUrl, /\\/g, '/')
+      
+      // `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
+    })
+
+    return pictures
+  }
+
+  /**
+   * attach thumbnail url to each picture
+   * 
+   * @param {object[]} pictures 
+   * @returns {object[]}
+   * @memberof Store
+   */
+  _withThumbUrl (pictures) {
+    pictures.forEach(pic => {
       let thumbUrl = url.format({
         pathname: join(this.thumbDir, `${pic.hash}.jpg`),
         protocol: 'file:',
@@ -493,10 +600,7 @@ class Store {
       })
 
       // trick to make url work in background-image: url()
-      pic.url = _.replace(picUrl, /\\/g, '/')
       pic.thumbUrl = _.replace(thumbUrl, /\\/g, '/')
-      
-      // `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
     })
 
     return pictures

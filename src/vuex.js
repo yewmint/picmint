@@ -4,6 +4,8 @@ import { rpc } from './utils'
 import { remote } from 'electron'
 import _ from 'lodash'
 
+const RESULT_PER_PAGE = 36
+
 Vue.use(Vuex)
 
 /**
@@ -20,8 +22,14 @@ export const store = new Vuex.Store({
     // loading progress
     loadingProgress: 0,
 
-    // text for last searching 
-    lastSearch: '',
+    // text for searching
+    searchText: '',
+
+    // page of serach result
+    searchPage: 1,
+
+    // total page of search result
+    searchTotalPage: 1,
 
     // search results
     pictures: [],
@@ -32,9 +40,7 @@ export const store = new Vuex.Store({
     // detail modal
     detail: {
       show: false,
-
-      // hash of currently chosen picture
-      hash: ''
+      picture: null
     },
 
     // tag list modal
@@ -52,10 +58,10 @@ export const store = new Vuex.Store({
   },
 
   getters: {
-    // get currently chosen picture
-    detailPicture ({ pictures, detail: { hash } }){
-      return _.find(pictures, { hash })
-    }
+    // // get currently chosen picture
+    // detailPicture ({ pictures, detail: { hash } }){
+    //   return _.find(pictures, { hash })
+    // }
   },
 
   mutations: {
@@ -71,44 +77,46 @@ export const store = new Vuex.Store({
       state.loadingProgress = progress
     },
 
-    setLastSearch (state, { text }){
-      state.lastSearch = text
+    setSearchText (state, { text }){
+      state.searchText = text
+    },
+
+    setSearchPage (state, { page }) {
+      state.searchPage = page
+    },
+
+    setSearchTotalPage (state, { totalPage }){
+      state.searchTotalPage = totalPage
     },
 
     setPictures (state, { pictures }){
       state.pictures = pictures
     },
 
-    setDetailHash (state, { hash }){
-      state.detail.hash = hash
+    setDetailPicture (state, { picture }){
+      state.detail.picture = picture
     },
 
     toggleModal (state, { name }) {
       state[name].show = !state[name].show
     },
 
-    addTag (state, { hash, tag }){
-      _(state.pictures)
-        .filter({ hash })
-        .forEach(picture => {
-          picture.tags = _(picture.tags)
-            .split(/\s+/)
-            .push(tag)
-            .compact()
-            .join(' ')
-        })
+    addTag (state, { tag }){
+      let pic = state.detail.picture
+      pic.tags = _(pic.tags)
+        .split(/\s+/)
+        .push(tag)
+        .compact()
+        .join(' ')
     },
 
-    removeTag (state, { hash, tag }){
-      _(state.pictures)
-        .filter({ hash })
-        .forEach(picture => {
-          picture.tags = _(picture.tags)
-            .split(/\s+/)
-            .without(tag)
-            .compact()
-            .join(' ')
-        })
+    removeTag (state, { tag }){
+      let pic = state.detail.picture
+      pic.tags = _(pic.tags)
+        .split(/\s+/)
+        .without(tag)
+        .compact()
+        .join(' ')
     },
 
     setTags (state, { tags }){
@@ -167,20 +175,44 @@ export const store = new Vuex.Store({
         return
       }
 
-      commit('setLastSearch', { text })
-      rpc.call('store-search', { words: text })
+      commit('setSearchText', { text })
+      this.dispatch('searchPage', { page: 1 })
+    },
+
+    searchPage ({ commit }, { page }){
+      commit('setSearchPage', { page })
+      rpc.call('store-search-page', { 
+        words: this.state.searchText, 
+        page,
+        pageSize: RESULT_PER_PAGE
+      })
     },
 
     refreshSearch (){
-      this.dispatch('search', { text: this.state.lastSearch })
+      this.dispatch('searchPage', { page: this.state.searchPage })
     },
 
-    didSearch ({ commit }, { result }){
-      commit('setPictures', { pictures: result })
+    // didSearch ({ commit }, { result }){
+    //   commit('setPictures', { pictures: result })
+    // },
+
+    didSearchPage ({ commit }, { result }){
+      commit('setPictures', { pictures: result.pics })
+      commit('setSearchTotalPage', { 
+        totalPage: Math.ceil(result.total / RESULT_PER_PAGE)
+      })
     },
 
-    toggleDetail ({ commit }, { hash = '' } = {}) {
-      commit('setDetailHash', { hash })
+    requestDetail ({ commit }, { hash }) {
+      rpc.call('store-get-picture', { hash })
+    },
+
+    launchDetail ({ commit }, { picture }){
+      commit('setDetailPicture', { picture })
+      commit('toggleModal', { name: 'detail' })
+    },
+
+    closeDetail ({ commit }){
       commit('toggleModal', { name: 'detail' })
     },
 
@@ -199,7 +231,7 @@ export const store = new Vuex.Store({
 
       rpc.call('store-add-tag', { tag, hash })
       rpc.call('store-get-tags')
-      commit('addTag', { tag, hash })
+      commit('addTag', { tag })
     },
 
     removeTag ({ commit }, { tag, hash }){
@@ -214,10 +246,10 @@ export const store = new Vuex.Store({
 
       rpc.call('store-remove-tag', { tag, hash })
       rpc.call('store-get-tags')
-      commit('removeTag', { tag, hash })
+      commit('removeTag', { tag })
 
       // if no tag available, add special tag to avoid bug
-      if (this.getters.detailPicture.tags.trim().length === 0){
+      if (this.state.detail.picture.tags.trim().length === 0){
         this.dispatch('addTag', { tag: 'no-tag', hash })
       }
     },
@@ -280,7 +312,7 @@ function polishTags (tags){
  * @returns {bool}
  */
 function tagExists(tag){
-  let { tags } = store.getters.detailPicture
+  let { tags } = store.state.detail.picture
   return _(tags).split(/\s+/).indexOf(tag) !== -1
 }
 
@@ -299,9 +331,19 @@ rpc.listen('store-rescan-progress', ({ progress }) => {
   store.dispatch('rescanProgress', { progress })
 })
 
-// listen store did search event
-rpc.listen('store-did-search', ({ result }) => {
-  store.dispatch('didSearch', { result })
+// listen store did open event
+rpc.listen('store-did-get-picture', ({ picture }) => {
+  store.dispatch('launchDetail', { picture })
+})
+
+// // listen store did search event
+// rpc.listen('store-did-search', ({ result }) => {
+//   store.dispatch('didSearch', { result })
+// })
+
+// listen store did search page event
+rpc.listen('store-did-search-page', ({ result }) => {
+  store.dispatch('didSearchPage', { result })
 })
 
 // listen did get tags event

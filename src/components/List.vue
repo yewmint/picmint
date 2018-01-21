@@ -9,7 +9,7 @@
       <div 
         class="thumbnail-frame"
         v-for="picture of pictures" 
-        :key="picture.path" 
+        :key="picture.hash" 
       >
         <div 
           class="thumbnail" 
@@ -23,13 +23,7 @@
         <i class="material-icons">keyboard_arrow_left</i>
       </button>
       <div class="page">
-        <select v-model="page">
-          <option 
-            v-for="index of totalPage" 
-            :key="index" 
-            :value="index - 1"
-          >{{ index }}</option>
-        </select>
+        {{ `${curPage} of ${totalPage}` }}
       </div>
       <button class="right" @click="rightHandler">
         <i class="material-icons">keyboard_arrow_right</i>
@@ -42,7 +36,7 @@
 import { tween, styler, easing } from 'popmotion'
 import _ from 'lodash'
 
-const NUM_PER_PAGE = 36
+// const NUM_PER_PAGE = 36
 
 function isNode(o){
   return (
@@ -72,42 +66,50 @@ function fadeIn (el) {
  * list for search result
  */
 export default {
-  data (){
-    return {
-      page: 0
-    }
-  },
+  // data (){
+  //   return {
+  //     page: 0
+  //   }
+  // },
 
   computed: {
     totalPage (){
-      return Math.ceil(
-        this.$store.state.pictures.length / NUM_PER_PAGE
-      )
+      return this.$store.state.searchTotalPage
     },
 
-    allPictures (){
+    pictures (){
       return this.$store.state.pictures
     },
 
-    // pictures in current page
-    pictures (){
-      return _.chunk(
-        this.allPictures, NUM_PER_PAGE
-      )[this.page]
+    curPage (){
+      return this.$store.state.searchPage
     }
+
+    // // pictures in current page
+    // pictures (){
+    //   return _.chunk(
+    //     this.allPictures, NUM_PER_PAGE
+    //   )[this.page]
+    // }
   },
 
   methods: {
     clickHandler (hash){
-      this.$store.dispatch('toggleDetail', { hash })
+      this.$store.dispatch('requestDetail', { hash })
     },
 
     leftHandler (){
-      this.page = _.max([this.page - 1, 0])
+      let tmpPage = this.curPage - 1
+      if (_.inRange(tmpPage, 1, this.totalPage + 1)){
+        this.$store.dispatch('searchPage', { page: tmpPage })
+      }
     },
 
     rightHandler (){
-      this.page = _.min([this.page + 1, this.totalPage - 1])
+      let tmpPage = this.curPage + 1
+      if (_.inRange(tmpPage, 1, this.totalPage + 1)){
+        this.$store.dispatch('searchPage', { page: tmpPage })
+      }
     },
 
     fadeList (){
@@ -125,10 +127,16 @@ export default {
   },
 
   watch: {
+    // // item may remain unchanged as search occured
+    // // invoke fadeList() to force fadein transition
+    // allPictures (){
+    //   this.page = 0
+    //   this.fadeList()
+    // }
+
     // item may remain unchanged as search occured
     // invoke fadeList() to force fadein transition
-    allPictures (){
-      this.page = 0
+    pictures (){
       this.fadeList()
     }
   }

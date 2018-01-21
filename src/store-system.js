@@ -35,9 +35,19 @@ const system = {
       rpc.call('store-did-open')
     })
 
-    rpc.listen('store-search', async ({ words }) => {
-      let result = await store.search(words)
-      rpc.call('store-did-search', { result })
+    // rpc.listen('store-search', async ({ words }) => {
+    //   let result = await store.search(words)
+    //   rpc.call('store-did-search', { result })
+    // })
+
+    rpc.listen('store-search-page', async ({ words, page, pageSize }) => {
+      let result = await store.searchPage(words, page, pageSize)
+      rpc.call('store-did-search-page', { result })
+    })
+
+    rpc.listen('store-get-picture', async ({ hash }) => {
+      let picture = await store.getPicture(hash)
+      rpc.call('store-did-get-picture', { picture })
     })
 
     rpc.listen('store-add-tag', async ({ hash, tag }) => {

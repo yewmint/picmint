@@ -82,7 +82,7 @@ export default {
 
   computed: {
     picture (){
-      return this.$store.getters.detailPicture
+      return this.$store.state.detail.picture
     },
 
     allTags (){
@@ -96,7 +96,7 @@ export default {
 
   methods: {
     handleBack (){
-      this.$store.dispatch('toggleDetail')
+      this.$store.dispatch('closeDetail')
     },
 
     handleAdd (ev){
