@@ -16,7 +16,11 @@ let server = null
 const system = {
   enter (){
     rpc.listen('store-open', async ({ path }) => {
-      store = await load(path)
+      store = await load(
+        path,
+        (progress) => rpc.call('store-scan-progress', { progress }),
+        (progress) => rpc.call('store-rescan-progress', { progress })
+      )
 
       // if (server && _.isFunction(server.stop)){
       //   server.stop()

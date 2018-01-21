@@ -3,9 +3,18 @@
  * @author yewmint
  */
 
-import { getFiles, md5, asyncMap, format, ensureDir } from './utils'
+import { 
+  getFiles, 
+  md5, 
+  asyncMap, 
+  format, 
+  ensureDir, 
+  asyncChunkForEach 
+} from './utils'
+
 import { existsSync } from 'fs'
 import { join } from 'path'
+import { cpus } from 'os'
 import url from 'url'
 import { logger } from './log'
 // import winston from 'winston'
@@ -164,8 +173,10 @@ class Store {
    * 4. other files are rescanned if size doesn't match
    *
    * @memberof Store
+   * @param {function} scanProgress callback for progress of scan
+   * @param {function} rescanProgress callback for progress of rescan
    */
-  async scan() {
+  async scan(scanProgress, rescanProgress) {
     await this._setupDB()
     let db = this.db
 
@@ -189,17 +200,20 @@ class Store {
 
     let tsc = new Date
     // scan debut files and push into pictures and tags
-    await asyncMap(
-      debutFiles, 
+    await asyncChunkForEach(
+      debutFiles,
+      cpus().length,
       async debutFile => {
         await this._scanPicture(debutFile)
-      }
+      },
+      scanProgress
     )
 
     let tsd = new Date
     // remove vanished files
-    await asyncMap(
+    await asyncChunkForEach(
       vanishedFiles,
+      cpus().length,
       async ({ path }) => {
         await dbCall(db, 'run', format(REMOVE_PATH_QUERY, { path }))
       }
@@ -208,11 +222,13 @@ class Store {
     let tse = new Date
     // console.log(modifiedFiles.length)
     // rescan existed files
-    await asyncMap(
+    await asyncChunkForEach(
       modifiedFiles,
+      cpus().length,
       async file => {
         await this._rescanPicture(file)
-      }
+      },
+      rescanProgress
     )
     
     let tsf = new Date
@@ -414,6 +430,7 @@ class Store {
       .resize(160, 160)
       .min()
       .crop()
+      .jpeg({ quality: 50 })
       .toFile(thumbPath)
   }
 
@@ -491,11 +508,13 @@ class Store {
  *
  * @export
  * @param {any} root root path of store
+ * @param {function} scanProgress callback for progress of scan
+ * @param {function} rescanProgress callback for progress of rescan
  * @returns {Sotre}
  */
-export async function load(root) {
+export async function load(root, scanProgress, rescanProgress) {
   let store = new Store(root)
-  await store.scan()
+  await store.scan(scanProgress, rescanProgress)
   return store
 }
 

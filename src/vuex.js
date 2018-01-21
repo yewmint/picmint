@@ -17,6 +17,9 @@ export const store = new Vuex.Store({
     // theme for title, [ light, dark ]
     titleTheme: 'light',
 
+    // loading progress
+    loadingProgress: 0,
+
     // text for last searching 
     lastSearch: '',
 
@@ -62,6 +65,10 @@ export const store = new Vuex.Store({
 
     switchTitleTheme (state, { theme }){
       state.titleTheme = theme
+    },
+
+    setLoadingProgress (state, { progress }){
+      state.loadingProgress = progress
     },
 
     setLastSearch (state, { text }){
@@ -132,10 +139,27 @@ export const store = new Vuex.Store({
       setTimeout(() => commit('switchPage', { page: 'loading' }), 0)
     },
 
+    scanProgress ({ commit }, { progress }){
+      commit('setLoadingProgress', {
+        progress: progress * 0.8
+      })
+    },
+
+    rescanProgress ({ commit }, { progress }){
+      commit('setLoadingProgress', {
+        progress: 0.8 + progress * 0.2
+      })
+    },
+
     didLoadStore ({ commit }) {
       rpc.call('store-get-tags')
-      commit('switchPage', { page: 'main' })
-      commit('switchTitleTheme', { theme: 'dark' })
+      commit('setLoadingProgress', { progress: 1 })
+
+      // finish loading progress bar animation
+      setTimeout(() => {
+        commit('switchPage', { page: 'main' })
+        commit('switchTitleTheme', { theme: 'dark' })
+      }, 400)
     },
 
     search ({ commit }, { text }){
@@ -263,6 +287,16 @@ function tagExists(tag){
 // listen store did open event
 rpc.listen('store-did-open', () => {
   store.dispatch('didLoadStore')
+})
+
+// listen store scan progress event
+rpc.listen('store-scan-progress', ({ progress }) => {
+  store.dispatch('scanProgress', { progress })
+})
+
+// listen store rescan progress event
+rpc.listen('store-rescan-progress', ({ progress }) => {
+  store.dispatch('rescanProgress', { progress })
 })
 
 // listen store did search event

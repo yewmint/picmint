@@ -199,6 +199,38 @@ export async function ensureDir (path){
 }
 
 /**
+ * async invoke forEach on chunk of arr
+ * progCb reflects progress
+ * 
+ * @export
+ * @param {any[]} arr 
+ * @param {number} chunkSize 
+ * @param {function} func 
+ * @param {function} progCb
+ */
+export async function asyncChunkForEach (arr, chunkSize, func, progCb){
+  if (
+    !_.isArray(arr) ||
+    !_.isNumber(chunkSize) ||
+    !_.isFunction(func)
+  ){
+    return Promise.resolve(null)
+  }
+
+  let chunks = _.chunk(arr, chunkSize)
+  let len = chunks.length
+
+  let index = 0
+  for (let chunk of chunks){
+    await asyncMap(chunk, func)
+
+    if (_.isFunction(progCb)){
+      progCb(++index / len)
+    }
+  }
+}
+
+/**
  * listen rpc in main process
  * 
  * @param {string} [eventName='default'] 
