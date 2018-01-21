@@ -1,3 +1,8 @@
+/**
+ * @file vuex.js
+ * @author yewmint
+ */
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { rpc } from './utils'

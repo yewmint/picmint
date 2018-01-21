@@ -23,7 +23,18 @@
         <i class="material-icons">keyboard_arrow_left</i>
       </button>
       <div class="page">
-        {{ `${curPage} of ${totalPage}` }}
+        <button @click="pageListHandler">{{ curPage }}</button>
+        <transition name="page-list">
+          <div class="page-list" v-if="showPageList">
+            <button 
+              v-for="idx in totalPage" 
+              :key="idx"
+              @click="() => selectPageHandler(idx)"
+            >
+              {{ idx }}  
+            </button>
+          </div>
+        </transition>
       </div>
       <button class="right" @click="rightHandler">
         <i class="material-icons">keyboard_arrow_right</i>
@@ -66,11 +77,12 @@ function fadeIn (el) {
  * list for search result
  */
 export default {
-  // data (){
-  //   return {
-  //     page: 0
-  //   }
-  // },
+  data (){
+    return {
+      // page: 0
+      showPageList: false
+    }
+  },
 
   computed: {
     totalPage (){
@@ -109,6 +121,17 @@ export default {
       let tmpPage = this.curPage + 1
       if (_.inRange(tmpPage, 1, this.totalPage + 1)){
         this.$store.dispatch('searchPage', { page: tmpPage })
+      }
+    },
+
+    pageListHandler (){
+      this.showPageList = !this.showPageList
+    },
+
+    selectPageHandler (page){
+      if (_.inRange(page, 1, this.totalPage + 1)){
+        this.$store.dispatch('searchPage', { page })
+        this.showPageList = !this.showPageList
       }
     },
 
@@ -165,7 +188,7 @@ export default {
   height: 160px
   background-size: cover
   background-position: center
-  box-shadow: 0px 6px 10px 0px #9c9c9c
+  box-shadow: 0px 2px 6px 0px #9c9c9c
   cursor: pointer
   transition: box-shadow 200ms, transform 200ms
 
@@ -189,21 +212,32 @@ export default {
   display: grid
   grid-template-columns: 40px 60px 40px
   grid-template-rows: 40px
-  box-shadow: 0 5px 20px 1px #636363
+  box-shadow: 0 2px 6px 0px rgba(99, 99, 99, 0.74)
 
   & .left, & .right
     @extend %btn
 
-  & .page select
-    appearance: none
-    -webkit-appearance: none
+  & .page
+    position: relative
+    text-align: center
 
-    margin: 0
-    padding: 8px 16px
-    line-height: 24px
-    border: none
+    & button
+      @extend %btn
+      width: 60px
 
-    &:focus
-      outline: none
+    & .page-list
+      position: absolute
+      bottom: 40px
+      height: 6 * 40px
+      overflow-y: auto
+      background-color: #fff
+      box-shadow: 0 2px 10px 1px rgba(99, 99, 99, 0.74)
+
+    & .page-list-enter, .page-list-leave-to
+      opacity: 0
+      transform: translateY(20px)
+
+    & .page-list-enter-active, .page-list-leave-active
+      transition: all 0.1s
 
 </style>

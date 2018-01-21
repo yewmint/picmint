@@ -1,3 +1,8 @@
+/**
+ * @file main.js
+ * @author yewmint
+ */
+
 import 'babel-polyfill'
 import { app, BrowserWindow, nativeImage } from 'electron'
 import { format } from 'url'
@@ -41,6 +46,7 @@ let icon = nativeImage.createFromPath(iconPath)
 function createWindow() {
   logger.info('app started.')
 
+  // enter all systems
   manager.enter()
 
   win = new BrowserWindow({
@@ -53,6 +59,8 @@ function createWindow() {
     autoHideMenuBar: true,
     icon,
     frame: false,
+
+    // show after first rendering
     show: false,
     webPreferences: {
       // trick to load images from external album

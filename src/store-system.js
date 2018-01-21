@@ -1,3 +1,8 @@
+/**
+ * @file store-system.js
+ * @author yewmint
+ */
+
 import { register } from './manager'
 import { rpc } from './utils'
 import { join } from 'path'

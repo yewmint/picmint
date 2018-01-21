@@ -202,7 +202,7 @@ class Store {
     await this._setupDB()
     let db = this.db
 
-    let tsa = new Date
+    // let tsa = new Date
 
     this.thumbDir = join(this.root, '.thumbs/')
     await ensureDir(this.thumbDir)
@@ -210,7 +210,7 @@ class Store {
     let existFiles = await this._scanFolder (this.root)
     let savedFiles = await dbCall(db, 'all', GET_ALL_PATH_QUERY)
     
-    let tsb = new Date
+    // let tsb = new Date
 
     let debutFiles = _.differenceBy(existFiles, savedFiles, 'path')
     let vanishedFiles = _.differenceBy(savedFiles, existFiles, 'path')
@@ -220,7 +220,7 @@ class Store {
       ))
     })
 
-    let tsc = new Date
+    // let tsc = new Date
     // scan debut files and push into pictures and tags
     await asyncChunkForEach(
       debutFiles,
@@ -231,7 +231,7 @@ class Store {
       scanProgress
     )
 
-    let tsd = new Date
+    // let tsd = new Date
     // remove vanished files
     await asyncChunkForEach(
       vanishedFiles,
@@ -241,7 +241,7 @@ class Store {
       }
     )
 
-    let tse = new Date
+    // let tse = new Date
     // console.log(modifiedFiles.length)
     // rescan existed files
     await asyncChunkForEach(
@@ -253,13 +253,13 @@ class Store {
       rescanProgress
     )
     
-    let tsf = new Date
+    // let tsf = new Date
 
-    console.log(`b: ${tsb - tsa}ms`)
-    console.log(`c: ${tsc - tsb}ms`)
-    console.log(`d: ${tsd - tsc}ms`)
-    console.log(`e: ${tse - tsd}ms`)
-    console.log(`f: ${tsf - tse}ms`)
+    // console.log(`b: ${tsb - tsa}ms`)
+    // console.log(`c: ${tsc - tsb}ms`)
+    // console.log(`d: ${tsd - tsc}ms`)
+    // console.log(`e: ${tse - tsd}ms`)
+    // console.log(`f: ${tsf - tse}ms`)
   }
 
   /**
@@ -431,6 +431,13 @@ class Store {
     return _.map(await dbCall(db, 'all', hashQuery), 'hash')
   }
 
+  /**
+   * get picture by hash
+   * 
+   * @param {string} hash 
+   * @returns {object}
+   * @memberof Store
+   */
   async getPicture (hash){
     let hashTagsQuery = format(HASH_TAGS_QUERY, { hash })
     let pictureQuery = format(PICTURE_BY_HASHTAGS_QUERY, {
@@ -506,7 +513,12 @@ class Store {
     await this._generateThumbnail({ path: realPath, hash })
   }
 
-
+  /**
+   * generate thumbnail for source
+   * 
+   * @param {any} { path, hash } 
+   * @memberof Store
+   */
   async _generateThumbnail ({ path, hash }){
     let thumbPath = join(this.thumbDir, `${hash}.jpg`)
 
@@ -515,12 +527,17 @@ class Store {
       return
     }
 
-    await sharp(path)
-      .resize(160, 160)
-      .min()
-      .crop()
-      .jpeg({ quality: 50 })
-      .toFile(thumbPath)
+    try {
+      await sharp(path)
+        .resize(160, 160)
+        .min()
+        .crop()
+        .jpeg({ quality: 50 })
+        .toFile(thumbPath)
+    }
+    catch (error){
+      logger.error('ERROR in _generateThumbnail', error)
+    }
   }
 
   /**
@@ -555,7 +572,7 @@ class Store {
    */
   async _scanFolder (path){
     let allFiles = await getFiles(path)
-    let picFiles = _.filter(allFiles, ({ path }) => /\.jpg$|\.png$/i.test(path))
+    let picFiles = _.filter(allFiles, ({ path }) => /\.(jpg|png)$/i.test(path))
 
     return picFiles
   }

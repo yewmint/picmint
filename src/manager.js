@@ -1,5 +1,10 @@
 /**
- * manage life cycle of systems
+ * @file manager.js
+ * @author yewmint
+ */
+
+/**
+ * manage life cycles of all system
  */
 
 import _ from 'lodash'
