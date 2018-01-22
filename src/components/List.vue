@@ -177,78 +177,94 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.list
-  width: 100vw
-  height: calc(100vh - #{$search-bar-height})
-  overflow-y: auto
+.list {
+  width: 100vw;
+  height: calc(100vh - #{$search-bar-height});
+  overflow-y: auto;
+}
 
-.pictures
-  display: grid
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
-  grid-template-rows: repeat(auto-fit, 200px)
+.pictures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-rows: repeat(auto-fit, 200px);
+}
 
-.thumbnail-frame
-  @extend %center-child
-  height: 200px
+.thumbnail-frame {
+  @extend %center-child;
+  height: 200px;
+}
 
-.thumbnail
-  width: 160px
-  height: 160px
-  background-size: cover
-  background-position: center
-  box-shadow: 0px 2px 6px 0px #9c9c9c
-  cursor: pointer
-  transition: box-shadow 200ms, transform 200ms
+.thumbnail {
+  width: 160px;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 6px 0 #9c9c9c;
+  cursor: pointer;
+  transition: box-shadow 200ms, transform 200ms;
 
-  &:hover
-    box-shadow: 0px 20px 40px 4px #9c9c9c
-    transform: translateY(-10px)
-    transition: box-shadow 200ms, transform 200ms
+  &:hover {
+    box-shadow: 0 20px 40px 4px #9c9c9c;
+    transform: translateY(-10px);
+    transition: box-shadow 200ms, transform 200ms;
+  }
+}
 
-.thumbnail-frame-enter-active
-  transition: all .2s cubic-bezier(0.4, 0.0, 0.2, 1)
+.thumbnail-frame-enter-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.thumbnail-frame-enter
-  opacity: 0
-  transform: scale(0.9)
+.thumbnail-frame-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
 
-.pagination
-  @extend %center-child
-  width: 140px
-  margin: 20px auto
-  border-radius: 0
-  display: grid
-  grid-template-columns: 40px 60px 40px
-  grid-template-rows: 40px
-  box-shadow: 0 2px 6px 0px rgba(99, 99, 99, 0.74)
+.pagination {
+  @extend %center-child;
+  width: 140px;
+  margin: 20px auto;
+  border-radius: 0;
+  display: grid;
+  grid-template-columns: 40px 60px 40px;
+  grid-template-rows: 40px;
+  box-shadow: 0 2px 6px 0 rgba(99, 99, 99, 0.74);
 
-  & .left, & .right
-    @extend %btn
+  & .left,
+  & .right {
+    @extend %btn;
+  }
 
-  & .page
-    position: relative
-    text-align: center
+  & .page {
+    position: relative;
+    text-align: center;
+  }
 
-    & button
-      @extend %btn
-      width: 60px
+  & button {
+    @extend %btn;
+    width: 60px;
+  }
 
-    & .page-list
-      position: absolute
-      bottom: 40px
-      height: 6 * 40px
-      overflow-y: auto
-      background-color: #fff
-      box-shadow: 0 2px 10px 1px rgba(99, 99, 99, 0.74)
+  & .page-list {
+    position: absolute;
+    bottom: 40px;
+    height: 6 * 40px;
+    overflow-y: auto;
+    background-color: #fff;
+    box-shadow: 0 2px 10px 1px rgba(99, 99, 99, 0.74);
+  }
 
-    & .page-list-enter, .page-list-leave-to
-      opacity: 0
-      transform: translateY(20px)
+  & .page-list-enter,
+  .page-list-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-    & .page-list-enter-active, .page-list-leave-active
-      transition: all 0.1s
-
+  & .page-list-enter-active,
+  .page-list-leave-active {
+    transition: all 0.1s;
+  }
+}
 </style>

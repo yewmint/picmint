@@ -92,61 +92,73 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.content
-  height: 100%
+.content {
+  height: 100%;
+}
 
-.title
-  display: grid
-  grid-template-columns: 40px auto
-  grid-template-rows: 40px
+.title {
+  display: grid;
+  grid-template-columns: 40px auto;
+  grid-template-rows: 40px;
 
-  & p
-    padding-left: 10px
-    line-height: 40px
-    font-size: 16px
+  & p {
+    padding-left: 10px;
+    line-height: 40px;
+    font-size: 16px;
+  }
+}
 
-.back
-  @extend %btn
+.back {
+  @extend %btn;
+}
 
-.form-wrapper
-  padding: 4px 16px
+.form-wrapper {
+  padding: 4px 16px;
+}
 
-.line-wrapper
-  display: grid
-  grid-template-columns: 80px 300px
-  grid-template-rows: 32px
-  margin: 16px 0
-  box-shadow: 0 1px 4px 1px #aaaaaa
+.line-wrapper {
+  display: grid;
+  grid-template-columns: 80px 300px;
+  grid-template-rows: 32px;
+  margin: 16px 0;
+  box-shadow: 0 1px 4px 1px #aaaaaa;
 
-  & p
-    line-height: 32px
-    padding: 0 8px
+  & p {
+    line-height: 32px;
+    padding: 0 8px;
+  }
 
-  & input
-    border: none
-    margin: 0
-    padding: 4px 8px
-    line-height: 32px
+  & input {
+    border: none;
+    margin: 0;
+    padding: 4px 8px;
+    line-height: 32px;
 
-    &:focus
-      outline: none
+    &:focus {
+      outline: none;
+    }
+  }
+}
 
-.execute-wrapper
-  text-align: right
-  margin-bottom: 8px
+.execute-wrapper {
+  text-align: right;
+  margin-bottom: 8px;
 
-  & button
-    @extend %btn
-    color: #ffffff
-    background-color: #00a3af
-    height: 32px
-    width: initial
-    padding: 0 8px
-    box-shadow: 0 1px 4px 1px #aaaaaa
+  & button {
+    @extend %btn;
+    color: #ffffff;
+    background-color: #00a3af;
+    height: 32px;
+    width: initial;
+    padding: 0 8px;
+    box-shadow: 0 1px 4px 1px #aaaaaa;
 
-    &:hover
-      background-color: #127c84
+    &:hover {
+      background-color: #127c84;
+    }
+  }
+}
 </style>

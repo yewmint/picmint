@@ -73,40 +73,48 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.title
-  display: grid
-  position: fixed
-  top: 0
-  width: 100vw
-  height: 40px
-  background-color: transparent
-  grid-template-columns: 120px auto 120px
-  grid-template-rows: 100%
-  -webkit-app-region: drag
-  transition: color 200ms
-  z-index: 1000
+.title {
+  display: grid;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 40px;
+  background-color: transparent;
+  grid-template-columns: 120px auto 120px;
+  grid-template-rows: 100%;
+  -webkit-app-region: drag;
+  transition: color 200ms;
+  z-index: 1000;
 
-  &.light
-    & i, & p
-      color: $text-black
+  &.light {
+    & i,
+    & p {
+      color: $text-black;
+    }
+  }
 
-  &.dark
-    & i, & p
-      color: $text-white
+  &.dark {
+    & i,
+    & p {
+      color: $text-white;
+    }
+  }
+}
 
-.title-btn-container
-  display: grid
-  grid-template-columns: repeat(4, 40px)
-  grid-template-rows: 100%
+.title-btn-container {
+  display: grid;
+  grid-template-columns: repeat(4, 40px);
+  grid-template-rows: 100%;
+}
 
-.title-text
-  line-height: 40px
-  font-size: 20px
-  font-weight: 500
-  padding-left: 10px
-  transition: color 200ms
-
+.title-text {
+  line-height: 40px;
+  font-size: 20px;
+  font-weight: 500;
+  padding-left: 10px;
+  transition: color 200ms;
+}
 </style>

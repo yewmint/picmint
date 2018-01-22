@@ -50,44 +50,53 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.content
-  height: 100%
+.content {
+  height: 100%;
+}
 
-.title
-  display: grid
-  grid-template-columns: 40px auto
-  grid-template-rows: 40px
+.title {
+  display: grid;
+  grid-template-columns: 40px auto;
+  grid-template-rows: 40px;
 
-  & p
-    padding-left: 10px
-    line-height: 40px
-    font-size: 16px
+  & p {
+    padding-left: 10px;
+    line-height: 40px;
+    font-size: 16px;
+  }
+}
 
-.back
-  @extend %btn
+.back {
+  @extend %btn;
+}
 
-.container-wrapper
-  height: calc(100% - 40px)
-  padding-right: 10px
-  overflow-y: auto
+.container-wrapper {
+  height: calc(100% - 40px);
+  padding-right: 10px;
+  overflow-y: auto;
+}
 
-.tags-container
-  text-align: center
-  padding: 10px 20px
+.tags-container {
+  text-align: center;
+  padding: 10px 20px;
 
-  & button
-    @extend %btn
-    background-color: #00a3af
+  & button {
+    @extend %btn;
+
+    background-color: #00a3af;
     color: white;
-    width: initial
-    padding: 4px 8px
-    box-shadow: 0 1px 2px 1px #aaaaaa
-    margin: 10px 10px
+    width: initial;
+    padding: 4px 8px;
+    box-shadow: 0 1px 2px 1px #aaa;
+    margin: 10px 10px;
 
-    &:hover
-      background-color: #148992
-      transform: translateY(-5px)
+    &:hover {
+      background-color: #148992;
+      transform: translateY(-5px);
+    }
+  }
+}
 </style>

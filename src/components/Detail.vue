@@ -180,132 +180,161 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.content
-  display: grid
-  width: 100%
-  height: 100%
-  grid-template-columns: 240px auto
-  grid-template-rows: 100%
+.content {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: 240px auto;
+  grid-template-rows: 100%;
+}
 
-.tag-aside
-  z-index: 101
-  box-shadow: 0px 0px 17px 4px rgba(0, 0, 0, 0.4)
-  
-.picture
-  cursor: pointer
-  background-color: #737373
-  background-size: contain
-  background-position: center
-  background-repeat: no-repeat
+.tag-aside {
+  z-index: 101;
+  box-shadow: 0 0 17px 4px rgba(0, 0, 0, 0.4);
+}
 
-.tag-title
-  display: grid
-  grid-template-columns: 40px auto
-  grid-template-rows: 40px
+.picture {
+  cursor: pointer;
+  background-color: #737373;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 
-  & p
-    padding-left: 10px
-    line-height: 40px
-    font-size: 16px
+.tag-title {
+  display: grid;
+  grid-template-columns: 40px auto;
+  grid-template-rows: 40px;
 
-.back
-  @extend %btn
+  & p {
+    padding-left: 10px;
+    line-height: 40px;
+    font-size: 16px;
+  }
+}
 
-.tag-new
-  position: relative
-  display: grid
-  grid-template-columns: auto 32px
-  grid-template-rows: 32px
+.back {
+  @extend %btn;
+}
 
-  & input
-    width: 100%
-    padding: 8px
-    border: none
+.tag-new {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 32px;
+  grid-template-rows: 32px;
 
-    &:focus
-      outline: none
+  & input {
+    width: 100%;
+    padding: 8px;
+    border: none;
 
-  & button
-    @extend %btn
-    width: 32px
-    height: 32px
-    transition: box-shadow 200ms
-    background: linear-gradient(45deg, #9369fe, #f05cff)
+    &:focus {
+      outline: none;
+    }
+  }
 
-    & i
-      color: #fff
+  & button {
+    @extend %btn;
+    width: 32px;
+    height: 32px;
+    transition: box-shadow 200ms;
+    background: linear-gradient(45deg, #9369fe, #f05cff);
 
-.hint-list
-  z-index: 200
-  position: absolute
-  top: 32px
-  width: 184px
-  background-color: #ffffff
-  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.28)
+    & i {
+      color: #fff;
+    }
+  }
+}
 
-  & p
-    margin: 0
-    padding: 4px 8px
+.hint-list {
+  z-index: 200;
+  position: absolute;
+  top: 32px;
+  width: 184px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.28);
 
-    &.selected
-      background-color: #cccccc
+  & p {
+    margin: 0;
+    padding: 4px 8px;
 
-.hint-list-enter, .hint-list-leave-to
-  opacity: 0
-  transform: translateY(-10px)
+    &.selected {
+      background-color: #cccccc;
+    }
+  }
+}
 
-.hint-list-enter-active
-  transition: all 0.1s cubic-bezier(0.0, 0.0, 0.2, 1)
+.hint-list-enter,
+.hint-list-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 
-.hint-list-leave-active
-  transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1)
+.hint-list-enter-active {
+  transition: all 0.1s cubic-bezier(0, 0, 0.2, 1);
+}
 
-.tag-section
-  padding: 12px
-  height: calc(100% - 40px)
-  overflow-y: auto
+.hint-list-leave-active {
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.tag, .tag-new
-  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.28)
-  margin-bottom: 16px
+.tag-section {
+  padding: 12px;
+  height: calc(100% - 40px);
+  overflow-y: auto;
+}
 
-.tag
+.tag,
+.tag-new {
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.28);
+  margin-bottom: 16px;
+}
 
-  display: grid
-  grid-template-columns: auto 32px
-  grid-template-rows: 32px
-  overflow: hidden
+.tag {
+  display: grid;
+  grid-template-columns: auto 32px;
+  grid-template-rows: 32px;
+  overflow: hidden;
 
-  & p
-    padding: 4px 8px
-    line-height: 24px
+  & p {
+    padding: 4px 8px;
+    line-height: 24px;
+  }
 
-  & button
-    @extend %btn
-    width: 32px
-    height: 32px
+  & button {
+    @extend %btn;
+    width: 32px;
+    height: 32px;
+  }
+}
 
-.tag-list
-  position: relative
+.tag-list {
+  position: relative;
+}
 
-.tag
-  transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)
+.tag {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.tag-list-enter
-  transition: all 0.3s cubic-bezier(0.0, 0.0, 0.2, 1)
+.tag-list-enter {
+  transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
 
-.tag-list-leave-to
-  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)
+.tag-list-leave-to {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.tag-list-enter, .tag-list-leave-to
-  opacity: 0
-  transform: translateX(-10px)
+.tag-list-enter,
+.tag-list-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
 
-.tag-list-leave-active
-  position: absolute
-  width: 100%
-
+.tag-list-leave-active {
+  position: absolute;
+  width: 100%;
+}
 </style>

@@ -72,60 +72,73 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-%control-btn
-  @extend %btn, %center-child
-  width: $frame-height
-  height: $frame-height
-  background-color: #ffffff
+%control-btn {
+  @extend %btn, %center-child;
+  width: $frame-height;
+  height: $frame-height;
+  background-color: #ffffff;
 
-  & i
-    color: #4c4c4c
+  & i {
+    color: #4c4c4c;
+  }
 
-  &:hover
-    background-color: #9a9a9a
+  &:hover {
+    background-color: #9a9a9a;
+  }
+}
 
-.title-bar
-  @extend %center-child
-  height: $search-bar-height
-  background: linear-gradient(45deg, #5f3aa0, #c75bbf)
-  padding-top: 20px
-  box-shadow: 0px 2px 20px 0px #636363
+.title-bar {
+  @extend %center-child;
+  height: $search-bar-height;
+  background: linear-gradient(45deg, #5f3aa0, #c75bbf);
+  padding-top: 20px;
+  box-shadow: 0 2px 20px 0 #636363;
+}
 
-.control-wrapper
-  display: grid
-  grid-template-columns: 40px 40px 540px
-  grid-template-rows: 40px
-  grid-column-gap: 20px
+.control-wrapper {
+  display: grid;
+  grid-template-columns: 40px 40px 540px;
+  grid-template-rows: 40px;
+  grid-column-gap: 20px;
+}
 
-.tags-wrapper, .batch-wrapper
-  box-shadow: 0 5px 20px 1px rgba(0, 0, 0, 0.6)
-  & button
-    @extend %control-btn
+.tags-wrapper,
+.batch-wrapper {
+  box-shadow: 0 5px 20px 1px rgba(0, 0, 0, 0.6);
+  & button {
+    @extend %control-btn;
+  }
+}
 
-.search-frame
-  box-shadow: 0 5px 20px 1px #5b3f69
-  height: $frame-height
-  display: grid
-  grid-template-columns: 500px 40px
+.search-frame {
+  box-shadow: 0 5px 20px 1px #5b3f69;
+  height: $frame-height;
+  display: grid;
+  grid-template-columns: 500px 40px;
 
-  & input
-    width: 500px
-    padding: 8px
-    border: none
+  & input {
+    width: 500px;
+    padding: 8px;
+    border: none;
 
-    &:focus
-      outline: none
+    &:focus {
+      outline: none;
+    }
+  }
 
-  & button
-    @extend %control-btn
+  & button {
+    @extend %control-btn;
+  }
+}
 
-.picture-list
-  height: calc(100vh - #{$search-bar-height})
-  overflow-y: auto
-  display: grid
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
-  grid-template-rows: repeat(auto-fit, 200px)
+.picture-list {
+  height: calc(100vh - #{$search-bar-height});
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-rows: repeat(auto-fit, 200px);
+}
 </style>

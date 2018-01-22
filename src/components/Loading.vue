@@ -41,35 +41,40 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-@import 'common.sass'
+<style lang="scss" scoped>
+@import 'common.sass';
 
-.loading
-  @extend %center-child
-  width: 100%
-  height: 100%
+.loading {
+  @extend %center-child;
+  width: 100%;
+  height: 100%;
+}
 
-.wrapper
-  @extend %center-child
+.wrapper {
+  @extend %center-child;
 
-  h2
-    margin-bottom: 60px
+  h2 {
+    margin-bottom: 60px;
+  }
 
-  i
-    font-size: 48px
+  i {
+    font-size: 48px;
+  }
+}
 
-.progress-bar
-  position: relative
-  margin: 20px 0
-  width: 80%
-  height: 4px
-  background-color: #d6d6d6
+.progress-bar {
+  position: relative;
+  margin: 20px 0;
+  width: 80%;
+  height: 4px;
+  background-color: #d6d6d6;
+}
 
-.progress-indicator
-  position: absolute
-  height: 4px
-  background-color: #8d0cde
-  left: 0
-  transition: width 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)
-
+.progress-indicator {
+  position: absolute;
+  height: 4px;
+  background-color: #8d0cde;
+  left: 0;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 </style>

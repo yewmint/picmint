@@ -55,8 +55,9 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-.full-page
-  width: 100vw
-  height: 100vh
+<style lang="scss" scoped>
+.full-page {
+  width: 100vw;
+  height: 100vh;
+}
 </style>
