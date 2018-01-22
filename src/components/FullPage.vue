@@ -1,5 +1,8 @@
 <template>
-  <div ref="fullPage" class="full-page">
+  <div 
+    ref="fullPage" 
+    class="full-page"
+  >
     <component :is="content" />
   </div>
 </template>
@@ -31,7 +34,7 @@ function fadeIn(el) {
  */
 export default {
   props: {
-    page: String
+    page: { type: String, default: '' }
   },
 
   computed: {
@@ -40,14 +43,14 @@ export default {
     }
   },
 
-  mounted() {
-    fadeIn(this.$refs.fullPage)
-  },
-
   watch: {
     page() {
       fadeIn(this.$refs.fullPage)
     }
+  },
+
+  mounted() {
+    fadeIn(this.$refs.fullPage)
   }
 }
 </script>

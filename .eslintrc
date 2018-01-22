@@ -1,7 +1,5 @@
 {
-  "plugins": [
-    "vue"
-  ],
+  "plugins": ["vue"],
 
   "env": {
     "browser": true,
@@ -10,24 +8,26 @@
     "jest": true
   },
 
-  "parser": "babel-eslint",
-
-  "extends": "eslint:recommended",
-
-  "rules": {
-    "indent": [ "error", 2 ],
-    "quotes": [ 2, "single" ],
-    "strict": [ 2, "never" ],
-    "semi": [ "error",  "never" ],
-    "no-console": 0
-  },
+  "parser": "vue-eslint-parser",
 
   "parserOptions": {
-    "ecmaVersion": 8,
+    "parser": "babel-eslint",
     "sourceType": "module",
+    "allowImportExportEverywhere": false,
+    "ecmaVersion": 8,
     "ecmaFeatures": {
       "modules": true,
       "jsx": true
     }
+  },
+
+  "extends": ["eslint:recommended", "plugin:vue/recommended"],
+
+  "rules": {
+    "indent": ["error", 2],
+    "quotes": [2, "single"],
+    "strict": [2, "never"],
+    "semi": ["error", "never"],
+    "no-console": 0
   }
 }

@@ -12,12 +12,15 @@
             <i class="material-icons">local_offer</i>
           </button>
         </div>
-        <form class="search-frame" @submit="handleSubmit">
+        <form 
+          class="search-frame" 
+          @submit="handleSubmit"
+        >
           <input 
             ref="search"
             v-model="value"
             placeholder="Time to search :)"
-          />
+          >
           <button type="submit">
             <i class="material-icons">play_arrow</i>
           </button>

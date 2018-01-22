@@ -1,28 +1,49 @@
 <template>
   <div class="content">
     <div class="title">
-      <button class="back" @click="handleBack">
+      <button 
+        class="back" 
+        @click="handleBack"
+      >
         <i class="material-icons">keyboard_arrow_left</i>
       </button>
       <p>
         Batch
       </p>
     </div>
-    <form class="form-wrapper" @submit="handleExecute">
+    <form 
+      class="form-wrapper" 
+      @submit="handleExecute"
+    >
       <div class="line-wrapper">
         <p>Contain:</p>
-        <input :readonly="isExecuting" type="text" v-model="contains" />
+        <input 
+          :readonly="isExecuting" 
+          type="text" 
+          v-model="contains" 
+        >
       </div>
       <div class="line-wrapper">
         <p>Add:</p>
-        <input :readonly="isExecuting" type="text" v-model="adds" />
+        <input 
+          :readonly="isExecuting" 
+          type="text" 
+          v-model="adds" 
+        >
       </div>
       <div class="line-wrapper">
         <p>Remove:</p>
-        <input :readonly="isExecuting" type="text" v-model="removes" />
+        <input 
+          :readonly="isExecuting" 
+          type="text" 
+          v-model="removes" 
+        >
       </div>
       <div class="execute-wrapper">
-        <button :disabled="isExecuting" type="submit">
+        <button 
+          :disabled="isExecuting" 
+          type="submit"
+        >
           {{ isExecuting ? 'Executing' : 'Execute' }}
         </button>
       </div>

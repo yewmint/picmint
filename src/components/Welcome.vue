@@ -2,7 +2,10 @@
   <div class="welcome">
     <div class="wrapper">
       <h2>Choose a store to enjoy 🎵</h2>
-      <button class="open-store" @click="handleOpen">
+      <button 
+        class="open-store" 
+        @click="handleOpen"
+      >
         <i class="material-icons">add</i>
       </button>
     </div>

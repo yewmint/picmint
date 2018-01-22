@@ -1,6 +1,9 @@
 <template>
   <transition name="fade">
-    <div v-if="show" class="picmint-modal">
+    <div 
+      v-if="show" 
+      class="picmint-modal"
+    >
       <div :class="`content-wrapper ${fullSize && 'fullsize'}`">
         <component :is="content" />
       </div>
@@ -17,7 +20,7 @@ export default {
   props: {
     show: { type: Boolean, default: false },
     fullSize: { type: Boolean, default: true },
-    content: Object
+    content: { type: Object, default: () => ({}) }
   }
 }
 </script>

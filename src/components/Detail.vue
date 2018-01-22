@@ -2,7 +2,10 @@
   <div class="content">
     <div class="tag-aside">
       <div class="tag-title">
-        <button class="back" @click="handleBack">
+        <button 
+          class="back" 
+          @click="handleBack"
+        >
           <i class="material-icons">keyboard_arrow_left</i>
         </button>
         <p>
@@ -10,19 +13,28 @@
         </p>
       </div>
       <div class="tag-section">
-        <form class="tag-new" @submit="handleAdd">
+        <form 
+          class="tag-new" 
+          @submit="handleAdd"
+        >
           <input 
             v-model="newTag" 
             placeholder="New tag"
             maxlength="14"
             type="text"
             @keydown="handleInputKeyDown"
-          />
-          <button type="submit" class="add">
+          >
+          <button 
+            type="submit" 
+            class="add"
+          >
             <i class="material-icons">add</i>
           </button>
           <transition name="hint-list">
-            <div v-if="showInpuHint && hints.length > 0" class="hint-list">
+            <div 
+              v-if="showInpuHint && hints.length > 0" 
+              class="hint-list"
+            >
               <p 
                 v-for="(hint, index) in hints" 
                 :key="hint" 
@@ -31,7 +43,11 @@
             </div>
           </transition>
         </form>
-        <transition-group class="tag-list" name="tag-list" tag="div">
+        <transition-group 
+          class="tag-list" 
+          name="tag-list" 
+          tag="div"
+        >
           <div 
             class="tag" 
             v-for="tag of picture.tags.split(/\s+/).reverse()"
@@ -47,14 +63,13 @@
           </div>
         </transition-group>
       </div>
-      <div class="list-mask"></div>
+      <div class="list-mask"/>
     </div>
     <div 
       class="picture" 
       :style="`background-image: url('${picture.url}')`" 
       @click="handleOpenPicture"
-    >
-    </div>
+    />
   </div>
 </template>
 
@@ -89,6 +104,18 @@ export default {
 
     showInpuHint() {
       return this.newTag.trim().length > 0
+    }
+  },
+
+  watch: {
+    // detect change of input to rehint
+    newTag() {
+      let currentInput = _.replace(this.newTag, /\s+/g, '-')
+
+      this.hintIndex = 0
+      this.hints = _.filter(this.allTags, tag =>
+        _.startsWith(tag, currentInput)
+      )
     }
   },
 
@@ -148,18 +175,6 @@ export default {
     // tap donw to navigate to next hint
     handleArrowDown() {
       this.hintIndex = _.min([this.hints.length - 1, this.hintIndex + 1])
-    }
-  },
-
-  watch: {
-    // detect change of input to rehint
-    newTag() {
-      let currentInput = _.replace(this.newTag, /\s+/g, '-')
-
-      this.hintIndex = 0
-      this.hints = _.filter(this.allTags, tag =>
-        _.startsWith(tag, currentInput)
-      )
     }
   }
 }

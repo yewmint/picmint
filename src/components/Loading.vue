@@ -6,7 +6,7 @@
         <div 
           class="progress-indicator"
           :style="{ width: `${progress}%` }"
-        ></div>
+        />
       </div>
     </div>
   </div>
@@ -29,14 +29,14 @@
  * loading page
  */
 export default {
-  mounted() {
-    // rotate(this.$refs.loadingIcon)
-  },
-
   computed: {
     progress() {
       return Math.round(this.$store.state.loadingProgress * 100)
     }
+  },
+
+  mounted() {
+    // rotate(this.$refs.loadingIcon)
   }
 }
 </script>

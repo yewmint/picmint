@@ -3,11 +3,23 @@
     <p class="title-text">
       {{ title }}
     </p>
-    <div class="title-drag"></div>
+    <div class="title-drag"/>
     <div class="title-btn-container">
-      <TitleButton :theme="theme" :callback="minimize" iconName="remove" />
-      <TitleButton :theme="theme" :callback="maxmize" iconName="crop_square" />
-      <TitleButton :theme="theme" :callback="close" iconName="clear" />
+      <TitleButton 
+        :theme="theme" 
+        :callback="minimize" 
+        icon-name="remove" 
+      />
+      <TitleButton 
+        :theme="theme" 
+        :callback="maxmize" 
+        icon-name="crop_square" 
+      />
+      <TitleButton 
+        :theme="theme" 
+        :callback="close" 
+        icon-name="clear" 
+      />
     </div>
   </div>
 </template>
@@ -31,6 +43,16 @@ export default {
     title: config.WINDOW_TITLE
   }),
 
+  computed: {
+    theme() {
+      return this.$store.state.titleTheme
+    },
+
+    className() {
+      return classname('title', this.theme)
+    }
+  },
+
   methods: {
     minimize() {
       win.minimize()
@@ -46,16 +68,6 @@ export default {
 
     close() {
       win.close()
-    }
-  },
-
-  computed: {
-    theme() {
-      return this.$store.state.titleTheme
-    },
-
-    className() {
-      return classname('title', this.theme)
     }
   }
 }

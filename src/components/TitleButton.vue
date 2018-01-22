@@ -1,5 +1,8 @@
 <template>
-  <button :class="className" @click="callback" >
+  <button 
+    :class="className" 
+    @click="callback" 
+  >
     <i class="material-icons">{{ iconName }}</i>
   </button>
 </template>

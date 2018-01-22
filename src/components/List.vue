@@ -15,17 +15,26 @@
           class="thumbnail" 
           :style="`background-image: url('${picture.thumbUrl}')`"
           @click="() => clickHandler(picture.hash)" 
-        ></div>
+        />
       </div>
     </transition-group>
-    <div class="pagination" v-if="totalPage > 1">
-      <button class="left" @click="leftHandler">
+    <div 
+      class="pagination" 
+      v-if="totalPage > 1"
+    >
+      <button 
+        class="left" 
+        @click="leftHandler"
+      >
         <i class="material-icons">keyboard_arrow_left</i>
       </button>
       <div class="page">
         <button @click="pageListHandler">{{ curPage }}</button>
         <transition name="page-list">
-          <div class="page-list" v-if="showPageList">
+          <div 
+            class="page-list" 
+            v-if="showPageList"
+          >
             <button 
               v-for="idx in totalPage" 
               :key="idx"
@@ -36,7 +45,10 @@
           </div>
         </transition>
       </div>
-      <button class="right" @click="rightHandler">
+      <button 
+        class="right" 
+        @click="rightHandler"
+      >
         <i class="material-icons">keyboard_arrow_right</i>
       </button>
     </div>
@@ -104,6 +116,21 @@ export default {
     // }
   },
 
+  watch: {
+    // // item may remain unchanged as search occured
+    // // invoke fadeList() to force fadein transition
+    // allPictures (){
+    //   this.page = 0
+    //   this.fadeList()
+    // }
+
+    // item may remain unchanged as search occured
+    // invoke fadeList() to force fadein transition
+    pictures() {
+      this.fadeList()
+    }
+  },
+
   methods: {
     clickHandler(hash) {
       this.$store.dispatch('requestDetail', { hash })
@@ -135,7 +162,7 @@ export default {
     },
 
     fadeList() {
-      this.$refs.pictures.$el.childNodes.forEach((child, idx) => {
+      this.$refs.pictures.$el.childNodes.forEach(child => {
         if (isNode(child)) {
           fadeIn(child)
         }
@@ -145,21 +172,6 @@ export default {
     async enter(el, done) {
       await fadeIn(el)
       done()
-    }
-  },
-
-  watch: {
-    // // item may remain unchanged as search occured
-    // // invoke fadeList() to force fadein transition
-    // allPictures (){
-    //   this.page = 0
-    //   this.fadeList()
-    // }
-
-    // item may remain unchanged as search occured
-    // invoke fadeList() to force fadein transition
-    pictures() {
-      this.fadeList()
     }
   }
 }

@@ -2,9 +2,20 @@
   <div class="root">
     <Title theme="light" />
     <FullPage :page="page" />
-    <Modal :content="Detail" :show="showDetail" />
-    <Modal :content="TagList" :show="showTagList" :fullSize="false" />
-    <Modal :content="Batch" :show="showBatch" :fullSize="false" />
+    <Modal 
+      :content="Detail" 
+      :show="showDetail" 
+    />
+    <Modal 
+      :content="TagList" 
+      :show="showTagList" 
+      :full-size="false" 
+    />
+    <Modal 
+      :content="Batch" 
+      :show="showBatch" 
+      :full-size="false" 
+    />
   </div>
 </template>
 

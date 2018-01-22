@@ -1,7 +1,10 @@
 <template>
   <div class="content">
     <div class="title">
-      <button class="back" @click="handleBack">
+      <button 
+        class="back" 
+        @click="handleBack"
+      >
         <i class="material-icons">keyboard_arrow_left</i>
       </button>
       <p>
@@ -28,6 +31,12 @@
  * add ande remove tag of current picture
  */
 export default {
+  computed: {
+    tags() {
+      return this.$store.state.tags.slice(0).sort()
+    }
+  },
+
   methods: {
     handleBack() {
       this.$store.dispatch('toggleTagList')
@@ -36,12 +45,6 @@ export default {
     handleTag(tag) {
       this.$store.dispatch('toggleTagList')
       this.$store.dispatch('search', { text: tag })
-    }
-  },
-
-  computed: {
-    tags() {
-      return this.$store.state.tags.sort()
     }
   }
 }
