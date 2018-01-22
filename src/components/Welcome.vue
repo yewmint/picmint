@@ -15,7 +15,7 @@
  */
 export default {
   methods: {
-    handleOpen (){
+    handleOpen() {
       this.$store.dispatch('loadStore')
     }
   }
@@ -52,5 +52,3 @@ export default {
     box-shadow: 0 5px 20px 1px #5d5d5d
 
 </style>
-
-

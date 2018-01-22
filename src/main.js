@@ -20,15 +20,14 @@ import iconPath from './assets/icon.ico'
 // })
 
 // return index path depending on environment
-function getIndexPath (){
-  if (process.env.NODE_ENV === 'production'){
+function getIndexPath() {
+  if (process.env.NODE_ENV === 'production') {
     return format({
       pathname: join(app.getAppPath(), 'index.html'),
       protocol: 'file:',
       slashes: true
     })
-  }
-  else {
+  } else {
     return format({
       pathname: 'index.html',
       hostname: 'localhost',

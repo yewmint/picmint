@@ -61,15 +61,13 @@
 <script>
 import _ from 'lodash'
 
-const INPUT_KEYS = [
-  'Tab', 'ArrowUp', 'ArrowDown'
-]
+const INPUT_KEYS = ['Tab', 'ArrowUp', 'ArrowDown']
 
 /**
  * modal for detail infomations of chosen picture
  */
 export default {
-  data (){
+  data() {
     return {
       newTag: '',
 
@@ -81,89 +79,86 @@ export default {
   },
 
   computed: {
-    picture (){
+    picture() {
       return this.$store.state.detail.picture
     },
 
-    allTags (){
+    allTags() {
       return this.$store.state.tags
     },
 
-    showInpuHint (){
+    showInpuHint() {
       return this.newTag.trim().length > 0
     }
   },
 
   methods: {
-    handleBack (){
+    handleBack() {
       this.$store.dispatch('closeDetail')
     },
 
-    handleAdd (ev){
+    handleAdd(ev) {
       ev.preventDefault()
 
       // prevent empty tag
-      if (this.newTag.length === 0){
+      if (this.newTag.length === 0) {
         return
       }
 
       this.$store.dispatch('addTag', {
-        tag: this.newTag, 
-        hash: this.picture.hash 
+        tag: this.newTag,
+        hash: this.picture.hash
       })
 
       // reset
       this.newTag = ''
     },
 
-    handleRemove (tag){
+    handleRemove(tag) {
       this.$store.dispatch('removeTag', {
-        tag: tag, 
-        hash: this.picture.hash 
+        tag: tag,
+        hash: this.picture.hash
       })
     },
 
-    handleOpenPicture (){
+    handleOpenPicture() {
       this.$store.dispatch('openPicture', {
-        path: this.picture.path 
+        path: this.picture.path
       })
     },
 
     // capture up, down and tab key to control hints list
-    handleInputKeyDown (ev){
-      if (_.indexOf(INPUT_KEYS, ev.key) !== -1){
+    handleInputKeyDown(ev) {
+      if (_.indexOf(INPUT_KEYS, ev.key) !== -1) {
         ev.preventDefault()
         this[`handle${ev.key}`]()
       }
     },
 
     // tap tab to apply current hint
-    handleTab (){
+    handleTab() {
       this.newTag = this.hints[this.hintIndex] + ' '
     },
 
     // tap up to navigate to previous hint
-    handleArrowUp (){
+    handleArrowUp() {
       this.hintIndex = _.max([0, this.hintIndex - 1])
     },
 
     // tap donw to navigate to next hint
-    handleArrowDown (){
-      this.hintIndex = _.min(
-        [this.hints.length - 1, this.hintIndex + 1]
-      )
+    handleArrowDown() {
+      this.hintIndex = _.min([this.hints.length - 1, this.hintIndex + 1])
     }
   },
 
   watch: {
     // detect change of input to rehint
-    newTag (){
+    newTag() {
       let currentInput = _.replace(this.newTag, /\s+/g, '-')
-      
+
       this.hintIndex = 0
-      this.hints = _.filter(
-        this.allTags, 
-        tag => _.startsWith(tag, currentInput)
+      this.hints = _.filter(this.allTags, tag =>
+        _.startsWith(tag, currentInput)
       )
     }
   }

@@ -19,12 +19,12 @@ let server = null
  * expose store api to rpc
  */
 const system = {
-  enter (){
+  enter() {
     rpc.listen('store-open', async ({ path }) => {
       store = await load(
         path,
-        (progress) => rpc.call('store-scan-progress', { progress }),
-        (progress) => rpc.call('store-rescan-progress', { progress })
+        progress => rpc.call('store-scan-progress', { progress }),
+        progress => rpc.call('store-rescan-progress', { progress })
       )
 
       // if (server && _.isFunction(server.stop)){
@@ -74,16 +74,16 @@ const system = {
       rpc.call('store-did-get-tags', { tags })
     })
 
-    rpc.listen('store-batch', async ({contains, adds, removes}) => {
+    rpc.listen('store-batch', async ({ contains, adds, removes }) => {
       await store.batch(contains, adds, removes)
       rpc.call('store-did-batch')
     })
   },
 
-  exit (){
+  exit() {
     store = null
 
-    if (server && _.isFunction(server.stop)){
+    if (server && _.isFunction(server.stop)) {
       server.stop()
     }
     server = null

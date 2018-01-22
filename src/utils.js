@@ -11,12 +11,12 @@ import { ipcRenderer, ipcMain, webContents } from 'electron'
 
 /**
  * implement util.promisify to polyfill node in electron
- * 
+ *
  * @export
- * @param {any} func 
- * @returns 
+ * @param {any} func
+ * @returns
  */
-export function promisify (func) {
+export function promisify(func) {
   return (...args) => {
     return new Promise((resolve, reject) => {
       func(...args, (err, value) => {
@@ -29,62 +29,58 @@ export function promisify (func) {
 
 /**
  * promisified readdir
- * 
+ *
  * @export
  */
 export const readdir = promisify(fs.readdir)
 
 /**
  * promisified stat
- * 
+ *
  * @export
  */
 export const stat = promisify(fs.stat)
 
 /**
  * promisified readFile
- * 
+ *
  * @export
  */
 export const readFile = promisify(fs.readFile)
 
 /**
  * promisified mkdir
- * 
+ *
  * @export
  */
 export const mkdir = promisify(fs.mkdir)
 
 // exclude for getFiles
-const EXCLUDE_DIRS = [
-  '.thumbs',
-  'System Volumn Information'
-]
+const EXCLUDE_DIRS = ['.thumbs', 'System Volumn Information']
 
 /**
  * get all file paths in a directory
  * recursively
- * 
+ *
  * @export
  * @param {string} root root path of directory
- * @param {string} [path='.'] 
+ * @param {string} [path='.']
  * @returns {string[]} relative paths
  */
-export async function getFiles (root, path = '.'){
+export async function getFiles(root, path = '.') {
   let curPath = join(root, path)
 
-  if (!existsSync(curPath)){
+  if (!existsSync(curPath)) {
     return []
   }
 
   let status = await stat(curPath)
 
-  if (status.isFile()){
-    return [ { path, size: status.size } ]
-  }
-  else if (status.isDirectory()){
+  if (status.isFile()) {
+    return [{ path, size: status.size }]
+  } else if (status.isDirectory()) {
     // if path is a hidden directory
-    if (EXCLUDE_DIRS.indexOf(path) !== -1){
+    if (EXCLUDE_DIRS.indexOf(path) !== -1) {
       return []
     }
 
@@ -96,21 +92,20 @@ export async function getFiles (root, path = '.'){
     )
 
     return _.concat(...filesArray)
-  }
-  else {
+  } else {
     return []
   }
 }
 
 /**
  * get md5 of file
- * 
+ *
  * @export
  * @param {string} path path to file
  * @returns {string}
  */
-export async function md5 (path){
-  if (!existsSync(path)){
+export async function md5(path) {
+  if (!existsSync(path)) {
     return Promise.resolve('')
   }
 
@@ -120,10 +115,9 @@ export async function md5 (path){
   return new Promise(resolve => {
     rstream.on('readable', () => {
       const data = rstream.read()
-      if (data){
+      if (data) {
         hash.update(data)
-      }
-      else {
+      } else {
         rstream.close()
         resolve(hash.digest('hex'))
       }
@@ -133,13 +127,13 @@ export async function md5 (path){
 
 /**
  * get file size of path
- * 
+ *
  * @export
- * @param {string} path 
+ * @param {string} path
  * @returns {number}
  */
-export async function fileSize (path){
-  if (!existsSync(path)){
+export async function fileSize(path) {
+  if (!existsSync(path)) {
     return Promise.resolve(-1)
   }
 
@@ -149,14 +143,14 @@ export async function fileSize (path){
 
 /**
  * invoke map for async mapper
- * 
+ *
  * @export
- * @param {object[]} array 
- * @param {async function} mapper 
+ * @param {object[]} array
+ * @param {async function} mapper
  * @returns {Promise<any[]>}
  */
-export async function asyncMap (array, mapper){
-  if (!_.isArray(array) || !_.isFunction(mapper)){
+export async function asyncMap(array, mapper) {
+  if (!_.isArray(array) || !_.isFunction(mapper)) {
     return Promise.resolve(null)
   }
 
@@ -165,26 +159,23 @@ export async function asyncMap (array, mapper){
 
 /**
  * format string using key-value pairs
- * 
+ *
  * @export
- * @param {string} template 
- * @param {object} data 
+ * @param {string} template
+ * @param {object} data
  * @returns {string}
  */
-export function format (template, data){
-  if (!_.isString(template), !_.isObject(data)){
+export function format(template, data) {
+  if (!_.isString(template) || !_.isObject(data)) {
     return null
   }
 
   let str = template
-  _.forOwn(
-    data, 
-    (value, key) => {
-      // ensure replacing all occurance
-      let reg = new RegExp(`\\$${key}`, 'g')
-      str = str.replace(reg, value)
-    }
-  )
+  _.forOwn(data, (value, key) => {
+    // ensure replacing all occurance
+    let reg = new RegExp(`\\$${key}`, 'g')
+    str = str.replace(reg, value)
+  })
 
   return str
 }
@@ -192,8 +183,8 @@ export function format (template, data){
 /**
  * ensure dir exists
  */
-export async function ensureDir (path){
-  if (!existsSync(path)){
+export async function ensureDir(path) {
+  if (!existsSync(path)) {
     await mkdir(path)
   }
 }
@@ -201,19 +192,15 @@ export async function ensureDir (path){
 /**
  * async invoke forEach on chunk of arr
  * progCb reflects progress
- * 
+ *
  * @export
- * @param {any[]} arr 
- * @param {number} chunkSize 
- * @param {function} func 
+ * @param {any[]} arr
+ * @param {number} chunkSize
+ * @param {function} func
  * @param {function} progCb
  */
-export async function asyncChunkForEach (arr, chunkSize, func, progCb){
-  if (
-    !_.isArray(arr) ||
-    !_.isNumber(chunkSize) ||
-    !_.isFunction(func)
-  ){
+export async function asyncChunkForEach(arr, chunkSize, func, progCb) {
+  if (!_.isArray(arr) || !_.isNumber(chunkSize) || !_.isFunction(func)) {
     return Promise.resolve(null)
   }
 
@@ -221,10 +208,10 @@ export async function asyncChunkForEach (arr, chunkSize, func, progCb){
   let len = chunks.length
 
   let index = 0
-  for (let chunk of chunks){
+  for (let chunk of chunks) {
     await asyncMap(chunk, func)
 
-    if (_.isFunction(progCb)){
+    if (_.isFunction(progCb)) {
       progCb(++index / len)
     }
   }
@@ -232,11 +219,11 @@ export async function asyncChunkForEach (arr, chunkSize, func, progCb){
 
 /**
  * listen rpc in main process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [func=_.noop] 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [func=_.noop]
  */
-function mainListen (eventName = 'default', func = _.noop){
+function mainListen(eventName = 'default', func = _.noop) {
   eventName = 'rpc-' + eventName
   ipcMain.on(eventName, (ev, arg) => {
     ev.returnValue = func(arg)
@@ -245,34 +232,34 @@ function mainListen (eventName = 'default', func = _.noop){
 
 /**
  * call rpc in main process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [args={}] 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [args={}]
  */
-function mainCall (eventName = 'default', args = {}){
+function mainCall(eventName = 'default', args = {}) {
   eventName = 'rpc-' + eventName
   webContents.getAllWebContents()[0].send(eventName, args)
 }
 
 /**
  * call sync rpc in main process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [args={}] 
- * @returns 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [args={}]
+ * @returns
  */
-function mainCallSync (eventName = 'default', args = {}){
+function mainCallSync(eventName = 'default', args = {}) {
   eventName = 'rpc-' + eventName
   return webContents.getAllWebContents()[0].sendSync(eventName, args)
 }
 
 /**
  * listen rpc in renderer process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [func=_.noop] 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [func=_.noop]
  */
-function rendererListen (eventName = 'default', func = _.noop){
+function rendererListen(eventName = 'default', func = _.noop) {
   eventName = 'rpc-' + eventName
   ipcRenderer.on(eventName, (ev, arg) => {
     ev.returnValue = func(arg)
@@ -281,23 +268,23 @@ function rendererListen (eventName = 'default', func = _.noop){
 
 /**
  * call rpc in renderer process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [args={}] 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [args={}]
  */
-function rendererCall (eventName = 'default', args = {}){
+function rendererCall(eventName = 'default', args = {}) {
   eventName = 'rpc-' + eventName
   ipcRenderer.send(eventName, args)
 }
 
 /**
  * call sync rpc in renderer process
- * 
- * @param {string} [eventName='default'] 
- * @param {any} [args={}] 
- * @returns 
+ *
+ * @param {string} [eventName='default']
+ * @param {any} [args={}]
+ * @returns
  */
-function rendererCallSync (eventName = 'default', args = {}){
+function rendererCallSync(eventName = 'default', args = {}) {
   eventName = 'rpc-' + eventName
   return ipcRenderer.sendSync(eventName, args)
 }
@@ -306,24 +293,23 @@ function rendererCallSync (eventName = 'default', args = {}){
  * take proxy to delegate
  */
 let proxy
-if (process.type === 'browser'){
-  proxy = { 
-    listen: mainListen, 
-    call: mainCall, 
-    callSync: mainCallSync 
-  } 
-}
-else if (process.type === 'renderer'){
-  proxy = { 
-    listen: rendererListen, 
-    call: rendererCall, 
-    callSync: rendererCallSync 
-  } 
+if (process.type === 'browser') {
+  proxy = {
+    listen: mainListen,
+    call: mainCall,
+    callSync: mainCallSync
+  }
+} else if (process.type === 'renderer') {
+  proxy = {
+    listen: rendererListen,
+    call: rendererCall,
+    callSync: rendererCallSync
+  }
 }
 
 /**
  * perform rpc
- * 
+ *
  * @export
  */
 export const rpc = proxy

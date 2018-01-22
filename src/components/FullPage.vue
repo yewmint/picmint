@@ -16,12 +16,12 @@ const PAGES = {
   main: Main
 }
 
-function fadeIn (el) {
-  tween({ 
+function fadeIn(el) {
+  tween({
     from: { y: -40, opacity: 0 },
-    to: { y: 0, opacity: 1 }, 
+    to: { y: 0, opacity: 1 },
     ease: easing.circOut,
-    duration: 300 
+    duration: 300
   }).start(styler(el).set)
 }
 
@@ -35,17 +35,17 @@ export default {
   },
 
   computed: {
-    content (){
+    content() {
       return PAGES[this.page]
     }
   },
 
-  mounted (){
+  mounted() {
     fadeIn(this.$refs.fullPage)
   },
 
   watch: {
-    page (){
+    page() {
       fadeIn(this.$refs.fullPage)
     }
   }

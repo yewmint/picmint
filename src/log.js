@@ -9,25 +9,25 @@
 
 import winston from 'winston'
 
-export const logger = new (winston.Logger)({
+export const logger = new winston.Logger({
   transports: [
-    new (winston.transports.File)({ 
+    new winston.transports.File({
       filename: 'app.log',
       timestamp: function() {
-        return (new Date).toString()
-      } 
+        return new Date().toString()
+      }
     })
   ]
 })
 
 logger.handleExceptions(
-  new (winston.Logger)({
+  new winston.Logger({
     transports: [
-      new (winston.transports.File)({ 
+      new winston.transports.File({
         filename: 'exception.log',
         timestamp: function() {
-          return (new Date).toString()
-        } 
+          return new Date().toString()
+        }
       })
     ]
   })

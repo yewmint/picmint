@@ -35,7 +35,7 @@
  * modal for batch task
  */
 export default {
-  data (){
+  data() {
     return {
       contains: '',
       adds: '',
@@ -44,30 +44,30 @@ export default {
   },
 
   computed: {
-    isExecuting (){
+    isExecuting() {
       return this.$store.state.batch.executing
     }
   },
 
   methods: {
-    handleBack (){
-      if (!this.isExecuting){
+    handleBack() {
+      if (!this.isExecuting) {
         this.$store.dispatch('toggleBatch')
       }
     },
 
-    handleExecute (ev){
+    handleExecute(ev) {
       ev.preventDefault()
 
-      if (!this.isExecuting){
-        this.$store.dispatch('runBatch' , {
+      if (!this.isExecuting) {
+        this.$store.dispatch('runBatch', {
           contains: this.contains,
           adds: this.adds,
           removes: this.removes
         })
       }
     }
-  },
+  }
 }
 </script>
 

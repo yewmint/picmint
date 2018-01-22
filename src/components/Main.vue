@@ -42,27 +42,27 @@ export default {
     List
   },
 
-  data (){
+  data() {
     return {
       value: ''
     }
   },
 
-  mounted (){
+  mounted() {
     this.$refs.search.focus()
   },
 
   methods: {
-    handleSubmit (ev){
+    handleSubmit(ev) {
       ev.preventDefault()
       this.$store.dispatch('search', { text: this.value })
     },
 
-    handleTags (){
+    handleTags() {
       this.$store.dispatch('toggleTagList')
     },
 
-    handleBatch (){
+    handleBatch() {
       this.$store.dispatch('toggleBatch')
     }
   }

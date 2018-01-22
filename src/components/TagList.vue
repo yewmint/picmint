@@ -29,18 +29,18 @@
  */
 export default {
   methods: {
-    handleBack (){
+    handleBack() {
       this.$store.dispatch('toggleTagList')
     },
 
-    handleTag (tag){
+    handleTag(tag) {
       this.$store.dispatch('toggleTagList')
       this.$store.dispatch('search', { text: tag })
     }
   },
 
   computed: {
-    tags (){
+    tags() {
       return this.$store.state.tags.sort()
     }
   }

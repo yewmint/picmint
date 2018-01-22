@@ -19,26 +19,28 @@ import Batch from './Batch'
 export default {
   components: { Title, FullPage, Modal },
 
-  data (){
+  data() {
     return {
-      Detail, TagList, Batch
+      Detail,
+      TagList,
+      Batch
     }
   },
 
   computed: {
-    page (){
+    page() {
       return this.$store.state.page
     },
 
-    showDetail (){
+    showDetail() {
       return this.$store.state.detail.show
     },
 
-    showTagList (){
+    showTagList() {
       return this.$store.state.tagList.show
     },
 
-    showBatch (){
+    showBatch() {
       return this.$store.state.batch.show
     }
   }

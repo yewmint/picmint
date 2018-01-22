@@ -16,9 +16,9 @@
 // import { tween, styler, easing } from 'popmotion'
 
 // function rotate (el) {
-//   tween({ 
+//   tween({
 //     from: 0,
-//     to: 360, 
+//     to: 360,
 //     duration: 2000,
 //     loop: Infinity,
 //     ease: easing.linear,
@@ -29,12 +29,12 @@
  * loading page
  */
 export default {
-  mounted (){
+  mounted() {
     // rotate(this.$refs.loadingIcon)
   },
 
   computed: {
-    progress (){
+    progress() {
       return Math.round(this.$store.state.loadingProgress * 100)
     }
   }

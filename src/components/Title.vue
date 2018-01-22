@@ -26,39 +26,37 @@ const win = remote.getCurrentWindow()
  */
 export default {
   components: { TitleButton },
-  
-  data: () => ({ 
-    title: config.WINDOW_TITLE 
+
+  data: () => ({
+    title: config.WINDOW_TITLE
   }),
 
   methods: {
-    minimize () {
+    minimize() {
       win.minimize()
     },
 
-    maxmize () {
-      if (win.isMaximized()){
+    maxmize() {
+      if (win.isMaximized()) {
         win.unmaximize()
-      }
-      else {
+      } else {
         win.maximize()
       }
     },
 
-    close () {
+    close() {
       win.close()
     }
   },
 
   computed: {
-    theme (){
+    theme() {
       return this.$store.state.titleTheme
     },
-    
-    className (){
+
+    className() {
       return classname('title', this.theme)
     }
-      
   }
 }
 </script>

@@ -3,13 +3,13 @@
  * @author yewmint
  */
 
-import { 
-  getFiles, 
-  md5, 
-  asyncMap, 
-  format, 
-  ensureDir, 
-  asyncChunkForEach 
+import {
+  getFiles,
+  md5,
+  asyncMap,
+  format,
+  ensureDir,
+  asyncChunkForEach
 } from './utils'
 
 import { existsSync } from 'fs'
@@ -119,7 +119,7 @@ WHERE tag = '$tag' AND hash = '$hash'
 `
 
 // const EXISTS_PATH_SIZE_QUERY = `
-// SELECT 1 
+// SELECT 1
 // WHERE EXISTS(
 //   SELECT * FROM paths WHERE path = '$path' AND size = $size LIMIT 1
 // )
@@ -148,10 +148,10 @@ FROM ($subquery)
 
 /**
  * call db function in promise
- * 
- * @param {sqlite3.Database} db 
- * @param {string} funcName 
- * @param {any[]} rest 
+ *
+ * @param {sqlite3.Database} db
+ * @param {string} funcName
+ * @param {any[]} rest
  * @returns {Promise<any>}
  */
 function dbCall(db, funcName, ...rest) {
@@ -207,17 +207,18 @@ class Store {
     this.thumbDir = join(this.root, '.thumbs/')
     await ensureDir(this.thumbDir)
 
-    let existFiles = await this._scanFolder (this.root)
+    let existFiles = await this._scanFolder(this.root)
     let savedFiles = await dbCall(db, 'all', GET_ALL_PATH_QUERY)
-    
+
     // let tsb = new Date
 
     let debutFiles = _.differenceBy(existFiles, savedFiles, 'path')
     let vanishedFiles = _.differenceBy(savedFiles, existFiles, 'path')
     let modifiedFiles = _.filter(existFiles, file => {
-      return _.find(savedFiles, ({ path, size }) => (
-        file.path === path && file.size !== size
-      ))
+      return _.find(
+        savedFiles,
+        ({ path, size }) => file.path === path && file.size !== size
+      )
     })
 
     // let tsc = new Date
@@ -233,13 +234,9 @@ class Store {
 
     // let tsd = new Date
     // remove vanished files
-    await asyncChunkForEach(
-      vanishedFiles,
-      cpus().length,
-      async ({ path }) => {
-        await dbCall(db, 'run', format(REMOVE_PATH_QUERY, { path }))
-      }
-    )
+    await asyncChunkForEach(vanishedFiles, cpus().length, async ({ path }) => {
+      await dbCall(db, 'run', format(REMOVE_PATH_QUERY, { path }))
+    })
 
     // let tse = new Date
     // console.log(modifiedFiles.length)
@@ -252,7 +249,7 @@ class Store {
       },
       rescanProgress
     )
-    
+
     // let tsf = new Date
 
     // console.log(`b: ${tsb - tsa}ms`)
@@ -264,7 +261,7 @@ class Store {
 
   /**
    * get all pictures
-   * 
+   *
    * @returns {object[]}
    * @memberof Store
    */
@@ -275,23 +272,23 @@ class Store {
 
   /**
    * add tag to hash
-   * 
-   * @param {string} hash 
-   * @param {string} tag 
+   *
+   * @param {string} hash
+   * @param {string} tag
    * @memberof Store
    */
-  async addTag (hash, tag){
+  async addTag(hash, tag) {
     await dbCall(this.db, 'run', format(ADD_TAG_QUERY, { tag, hash }))
   }
 
   /**
    * remove tag from hash
-   * 
-   * @param {string} hash 
-   * @param {string} tag 
+   *
+   * @param {string} hash
+   * @param {string} tag
    * @memberof Store
    */
-  async removeTag (hash, tag){
+  async removeTag(hash, tag) {
     await dbCall(this.db, 'run', format(REMOVE_TAG_QUERY, { tag, hash }))
   }
 
@@ -347,14 +344,14 @@ class Store {
 
   /**
    * search pictures of specified tags with pagination
-   * 
-   * @param {string} [text=''] 
-   * @param {number} [page=1] 
-   * @param {number} [pageSize=36] 
+   *
+   * @param {string} [text='']
+   * @param {number} [page=1]
+   * @param {number} [pageSize=36]
    * @returns {object[]}
    * @memberof Store
    */
-  async searchPage (text = '', page = 1, pageSize = 36){
+  async searchPage(text = '', page = 1, pageSize = 36) {
     let db = this.db
 
     // tags are separated by space char
@@ -372,22 +369,18 @@ class Store {
       .join('\nINTERSECT\n')
 
     // 2. query to get paginated hashes
-    let pageHashesQuery = format(
-      SEARCH_HASHES_PAGE_QUERY, { 
-        subquery: hashesQuery,
-        limit: pageSize,
-        offset: pageSize * (page - 1)
-      }
-    )
+    let pageHashesQuery = format(SEARCH_HASHES_PAGE_QUERY, {
+      subquery: hashesQuery,
+      limit: pageSize,
+      offset: pageSize * (page - 1)
+    })
 
     let pics = await dbCall(db, 'all', pageHashesQuery)
 
     // 3. get total number of hashes
-    let numberHashesQuery = format(
-      SEARCH_TOTAL_NUMBER_QUERY, {
-        subquery: hashesQuery
-      }
-    )
+    let numberHashesQuery = format(SEARCH_TOTAL_NUMBER_QUERY, {
+      subquery: hashesQuery
+    })
 
     let { total } = await dbCall(db, 'get', numberHashesQuery)
 
@@ -399,24 +392,24 @@ class Store {
 
   /**
    * get all tags
-   * 
+   *
    * @returns {string[]}
    * @memberof Store
    */
-  async getTags (){
+  async getTags() {
     let result = await dbCall(this.db, 'all', TAGS_QUERY)
     return _.map(result, 'tag')
   }
 
   /**
    * get hashes by tags
-   * 
-   * @param {string} [tags=''] 
+   *
+   * @param {string} [tags='']
    * @returns {string[]}
    * @memberof Store
    */
-  async getHash (tags = ''){
-    if (tags.trim().length === 0){
+  async getHash(tags = '') {
+    if (tags.trim().length === 0) {
       return []
     }
 
@@ -428,45 +421,51 @@ class Store {
       .map(word => _.replace(word, /'/g, '\'\''))
       .map(tag => format(HASH_BY_TAG_QUERY, { tag }))
       .join('\nINTERSECT\n')
-    
+
     return _.map(await dbCall(db, 'all', hashQuery), 'hash')
   }
 
   /**
    * get picture by hash
-   * 
-   * @param {string} hash 
+   *
+   * @param {string} hash
    * @returns {object}
    * @memberof Store
    */
-  async getPicture (hash){
+  async getPicture(hash) {
     let hashTagsQuery = format(HASH_TAGS_QUERY, { hash })
     let pictureQuery = format(PICTURE_BY_HASHTAGS_QUERY, {
       subquery: hashTagsQuery
     })
-    
+
     let pic = await dbCall(this.db, 'get', pictureQuery)
 
-    if (!_.isObject(pic)){
+    if (!_.isObject(pic)) {
       return null
     }
 
-    return this._withUrl([ pic ])[0]
+    return this._withUrl([pic])[0]
   }
 
   /**
    * batch task
    * remove 'removes' and add 'adds' into pictures containing 'contains'
-   * 
-   * @param {string} contains 
-   * @param {string} adds 
-   * @param {string} removes 
+   *
+   * @param {string} contains
+   * @param {string} adds
+   * @param {string} removes
    * @memberof Store
    */
-  async batch (contains = '', adds = '', removes = ''){
+  async batch(contains = '', adds = '', removes = '') {
     let hashes = await this.getHash(contains)
-    let addTags = _(adds).split(/\s+/).compact().value()
-    let removeTags = _(removes).split(/\s+/).compact().value()
+    let addTags = _(adds)
+      .split(/\s+/)
+      .compact()
+      .value()
+    let removeTags = _(removes)
+      .split(/\s+/)
+      .compact()
+      .value()
 
     await asyncMap(hashes, async hash => {
       await asyncMap(addTags, async tag => await this.addTag(hash, tag))
@@ -481,7 +480,7 @@ class Store {
    * @memberof Store
    */
   async _setupDB() {
-    if (_.isObject(this.db) && _.isFunction(this.db.close)){
+    if (_.isObject(this.db) && _.isFunction(this.db.close)) {
       await new Promise(resolve => this.db.close(resolve))
     }
 
@@ -519,15 +518,15 @@ class Store {
 
   /**
    * generate thumbnail for source
-   * 
-   * @param {any} { path, hash } 
+   *
+   * @param {any} { path, hash }
    * @memberof Store
    */
-  async _generateThumbnail ({ path, hash }){
+  async _generateThumbnail({ path, hash }) {
     let thumbPath = join(this.thumbDir, `${hash}.jpg`)
 
     // if thumbnail exist
-    if (existsSync(thumbPath)){
+    if (existsSync(thumbPath)) {
       return
     }
 
@@ -538,8 +537,7 @@ class Store {
         .crop()
         .jpeg({ quality: 50 })
         .toFile(thumbPath)
-    }
-    catch (error){
+    } catch (error) {
       logger.error('ERROR in _generateThumbnail', error)
     }
   }
@@ -547,11 +545,11 @@ class Store {
   /**
    * rescan existed file,
    * update hash if size doesn't match record from database
-   * 
-   * @param {object} file 
+   *
+   * @param {object} file
    * @memberof Store
    */
-  async _rescanPicture ({ path, size }){
+  async _rescanPicture({ path, size }) {
     let db = this.db
     let realPath = join(this.root, path)
 
@@ -572,12 +570,12 @@ class Store {
 
   /**
    * scan folder to get all pictures
-   * 
-   * @param {string} path 
+   *
+   * @param {string} path
    * @returns {object}
    * @memberof Store
    */
-  async _scanFolder (path){
+  async _scanFolder(path) {
     let allFiles = await getFiles(path)
     let picFiles = _.filter(allFiles, ({ path }) => /\.(jpg|png)$/i.test(path))
 
@@ -586,12 +584,12 @@ class Store {
 
   /**
    * attach url to each picture
-   * 
-   * @param {object[]} pictures 
+   *
+   * @param {object[]} pictures
    * @returns {object[]}
    * @memberof Store
    */
-  _withUrl (pictures) {
+  _withUrl(pictures) {
     pictures.forEach(pic => {
       let picUrl = url.format({
         pathname: join(this.root, pic.path),
@@ -601,7 +599,7 @@ class Store {
 
       // trick to make url work in background-image: url()
       pic.url = _.replace(picUrl, /\\/g, '/')
-      
+
       // `http://127.0.0.1:${SERVER_PORT}/${pic.path}`
     })
 
@@ -610,12 +608,12 @@ class Store {
 
   /**
    * attach thumbnail url to each picture
-   * 
-   * @param {object[]} pictures 
+   *
+   * @param {object[]} pictures
    * @returns {object[]}
    * @memberof Store
    */
-  _withThumbUrl (pictures) {
+  _withThumbUrl(pictures) {
     pictures.forEach(pic => {
       let thumbUrl = url.format({
         pathname: join(this.thumbDir, `${pic.hash}.jpg`),
@@ -651,7 +649,7 @@ export async function load(root, scanProgress, rescanProgress) {
 //   let store = await load('tmp')
 //   let bt = new Date()
 //   console.log(bt - at)
-  
+
 //   // winston.log(await store.all())
 //   // await store.addTag('cc43840a3635933be43f13d0e3a5af2e', 'window')
 //   // await store.removeTag('cc43840a3635933be43f13d0e3a5af2e', 'window')

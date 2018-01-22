@@ -70,43 +70,43 @@ export const store = new Vuex.Store({
   },
 
   mutations: {
-    switchPage (state, { page }){
+    switchPage(state, { page }) {
       state.page = page
     },
 
-    switchTitleTheme (state, { theme }){
+    switchTitleTheme(state, { theme }) {
       state.titleTheme = theme
     },
 
-    setLoadingProgress (state, { progress }){
+    setLoadingProgress(state, { progress }) {
       state.loadingProgress = progress
     },
 
-    setSearchText (state, { text }){
+    setSearchText(state, { text }) {
       state.searchText = text
     },
 
-    setSearchPage (state, { page }) {
+    setSearchPage(state, { page }) {
       state.searchPage = page
     },
 
-    setSearchTotalPage (state, { totalPage }){
+    setSearchTotalPage(state, { totalPage }) {
       state.searchTotalPage = totalPage
     },
 
-    setPictures (state, { pictures }){
+    setPictures(state, { pictures }) {
       state.pictures = pictures
     },
 
-    setDetailPicture (state, { picture }){
+    setDetailPicture(state, { picture }) {
       state.detail.picture = picture
     },
 
-    toggleModal (state, { name }) {
+    toggleModal(state, { name }) {
       state[name].show = !state[name].show
     },
 
-    addTag (state, { tag }){
+    addTag(state, { tag }) {
       let pic = state.detail.picture
       pic.tags = _(pic.tags)
         .split(/\s+/)
@@ -115,7 +115,7 @@ export const store = new Vuex.Store({
         .join(' ')
     },
 
-    removeTag (state, { tag }){
+    removeTag(state, { tag }) {
       let pic = state.detail.picture
       pic.tags = _(pic.tags)
         .split(/\s+/)
@@ -124,25 +124,25 @@ export const store = new Vuex.Store({
         .join(' ')
     },
 
-    setTags (state, { tags }){
+    setTags(state, { tags }) {
       state.tags = tags
     },
 
-    setBatchState (state, payload){
-      _.forOwn(payload, (value, key) => state[key] = value)
+    setBatchState(state, payload) {
+      _.forOwn(payload, (value, key) => (state[key] = value))
     }
   },
 
   actions: {
-    loadStore ({ commit }) {
+    loadStore({ commit }) {
       let paths = remote.dialog.showOpenDialog({
         title: 'Choose album directory',
-        properties: [ 'openDirectory' ]
+        properties: ['openDirectory']
       })
 
       // in case user cancel dialog
-      if (!_.isArray(paths)){
-        return 
+      if (!_.isArray(paths)) {
+        return
       }
 
       // set timeout to finish transition
@@ -152,19 +152,19 @@ export const store = new Vuex.Store({
       setTimeout(() => commit('switchPage', { page: 'loading' }), 0)
     },
 
-    scanProgress ({ commit }, { progress }){
+    scanProgress({ commit }, { progress }) {
       commit('setLoadingProgress', {
         progress: progress * 0.8
       })
     },
 
-    rescanProgress ({ commit }, { progress }){
+    rescanProgress({ commit }, { progress }) {
       commit('setLoadingProgress', {
         progress: 0.8 + progress * 0.2
       })
     },
 
-    didLoadStore ({ commit }) {
+    didLoadStore({ commit }) {
       rpc.call('store-get-tags')
       commit('setLoadingProgress', { progress: 1 })
 
@@ -175,8 +175,8 @@ export const store = new Vuex.Store({
       }, 400)
     },
 
-    search ({ commit }, { text }){
-      if (!_.isString(text) || text.length === 0){
+    search({ commit }, { text }) {
+      if (!_.isString(text) || text.length === 0) {
         return
       }
 
@@ -184,16 +184,16 @@ export const store = new Vuex.Store({
       this.dispatch('searchPage', { page: 1 })
     },
 
-    searchPage ({ commit }, { page }){
+    searchPage({ commit }, { page }) {
       commit('setSearchPage', { page })
-      rpc.call('store-search-page', { 
-        words: this.state.searchText, 
+      rpc.call('store-search-page', {
+        words: this.state.searchText,
         page,
         pageSize: RESULT_PER_PAGE
       })
     },
 
-    refreshSearch (){
+    refreshSearch() {
       this.dispatch('searchPage', { page: this.state.searchPage })
     },
 
@@ -201,36 +201,39 @@ export const store = new Vuex.Store({
     //   commit('setPictures', { pictures: result })
     // },
 
-    didSearchPage ({ commit }, { result }){
+    didSearchPage({ commit }, { result }) {
       commit('setPictures', { pictures: result.pics })
-      commit('setSearchTotalPage', { 
+      commit('setSearchTotalPage', {
         totalPage: Math.ceil(result.total / RESULT_PER_PAGE)
       })
     },
 
-    requestDetail ({ commit }, { hash }) {
+    requestDetail({ commit }, { hash }) {
       rpc.call('store-get-picture', { hash })
     },
 
-    launchDetail ({ commit }, { picture }){
+    launchDetail({ commit }, { picture }) {
       commit('setDetailPicture', { picture })
       commit('toggleModal', { name: 'detail' })
     },
 
-    closeDetail ({ commit }){
+    closeDetail({ commit }) {
       commit('toggleModal', { name: 'detail' })
     },
 
-    addTag ({ commit }, { tag, hash }){
-      if (!_.isString(tag) || tag.length === 0){
+    addTag({ commit }, { tag, hash }) {
+      if (!_.isString(tag) || tag.length === 0) {
         return
       }
 
       // preprocess tag to avoid space chars
-      tag = _(_.toLower(tag)).split(/\s+/).compact().join('-')
+      tag = _(_.toLower(tag))
+        .split(/\s+/)
+        .compact()
+        .join('-')
 
       // check if tag exists
-      if (tagExists(tag)){
+      if (tagExists(tag)) {
         return
       }
 
@@ -239,13 +242,13 @@ export const store = new Vuex.Store({
       commit('addTag', { tag })
     },
 
-    removeTag ({ commit }, { tag, hash }){
-      if (!_.isString(tag) || tag.length === 0){
+    removeTag({ commit }, { tag, hash }) {
+      if (!_.isString(tag) || tag.length === 0) {
         return
       }
 
       // check if tag doesn't exists
-      if (!tagExists(tag)){
+      if (!tagExists(tag)) {
         return
       }
 
@@ -254,28 +257,28 @@ export const store = new Vuex.Store({
       commit('removeTag', { tag })
 
       // if no tag available, add special tag to avoid bug
-      if (this.state.detail.picture.tags.trim().length === 0){
+      if (this.state.detail.picture.tags.trim().length === 0) {
         this.dispatch('addTag', { tag: 'no-tag', hash })
       }
     },
 
-    openPicture (store, { path }){
+    openPicture(store, { path }) {
       rpc.call('store-open-picture', { path })
     },
 
-    toggleTagList ({ commit }){
+    toggleTagList({ commit }) {
       commit('toggleModal', { name: 'tagList' })
     },
 
-    setTags ({ commit }, { tags }){
+    setTags({ commit }, { tags }) {
       commit('setTags', { tags })
     },
 
-    toggleBatch ({ commit }){
+    toggleBatch({ commit }) {
       commit('toggleModal', { name: 'batch' })
     },
 
-    runBatch ({ commit }, { contains, adds, removes }){
+    runBatch({ commit }, { contains, adds, removes }) {
       contains = polishTags(contains)
       adds = polishTags(adds)
       removes = polishTags(removes)
@@ -286,7 +289,7 @@ export const store = new Vuex.Store({
       commit('setBatchState', { executing: true })
     },
 
-    didBatch ({ commit }){
+    didBatch({ commit }) {
       commit('setBatchState', { executing: false })
 
       // refresh search to update tags
@@ -299,11 +302,11 @@ export const store = new Vuex.Store({
 
 /**
  * clear odd spaces
- * 
- * @param {string} tags 
+ *
+ * @param {string} tags
  * @returns {string}
  */
-function polishTags (tags){
+function polishTags(tags) {
   return _(tags)
     .split(/\s+/)
     .compact()
@@ -312,13 +315,17 @@ function polishTags (tags){
 
 /**
  * if tag exists in currently chosen picture
- * 
- * @param {string} tag 
+ *
+ * @param {string} tag
  * @returns {bool}
  */
-function tagExists(tag){
+function tagExists(tag) {
   let { tags } = store.state.detail.picture
-  return _(tags).split(/\s+/).indexOf(tag) !== -1
+  return (
+    _(tags)
+      .split(/\s+/)
+      .indexOf(tag) !== -1
+  )
 }
 
 // listen store did open event

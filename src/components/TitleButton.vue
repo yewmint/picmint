@@ -18,8 +18,8 @@ export default {
   },
 
   computed: {
-    className () { 
-      return `${this.theme}-btn` 
+    className() {
+      return `${this.theme}-btn`
     }
   }
 }

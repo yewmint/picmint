@@ -49,21 +49,20 @@ import _ from 'lodash'
 
 // const NUM_PER_PAGE = 36
 
-function isNode(o){
-  return (
-    typeof Node === "object" ? o instanceof Node : 
-      o && 
-      typeof o === "object" && 
-      typeof o.nodeType === "number" && 
-      typeof o.nodeName==="string"
-  );
+function isNode(o) {
+  return typeof Node === 'object'
+    ? o instanceof Node
+    : o &&
+        typeof o === 'object' &&
+        typeof o.nodeType === 'number' &&
+        typeof o.nodeName === 'string'
 }
 
-function fadeIn (el) {
+function fadeIn(el) {
   return new Promise(resolve => {
-    tween({ 
+    tween({
       from: { scale: 0.9, opacity: 0 },
-      to: { scale: 1, opacity: 1 }, 
+      to: { scale: 1, opacity: 1 },
       ease: easing.cubicBezier(0.4, 0.0, 0.2, 1),
       duration: 300
     }).start({
@@ -77,7 +76,7 @@ function fadeIn (el) {
  * list for search result
  */
 export default {
-  data (){
+  data() {
     return {
       // page: 0
       showPageList: false
@@ -85,15 +84,15 @@ export default {
   },
 
   computed: {
-    totalPage (){
+    totalPage() {
       return this.$store.state.searchTotalPage
     },
 
-    pictures (){
+    pictures() {
       return this.$store.state.pictures
     },
 
-    curPage (){
+    curPage() {
       return this.$store.state.searchPage
     }
 
@@ -106,44 +105,44 @@ export default {
   },
 
   methods: {
-    clickHandler (hash){
+    clickHandler(hash) {
       this.$store.dispatch('requestDetail', { hash })
     },
 
-    leftHandler (){
+    leftHandler() {
       let tmpPage = this.curPage - 1
-      if (_.inRange(tmpPage, 1, this.totalPage + 1)){
+      if (_.inRange(tmpPage, 1, this.totalPage + 1)) {
         this.$store.dispatch('searchPage', { page: tmpPage })
       }
     },
 
-    rightHandler (){
+    rightHandler() {
       let tmpPage = this.curPage + 1
-      if (_.inRange(tmpPage, 1, this.totalPage + 1)){
+      if (_.inRange(tmpPage, 1, this.totalPage + 1)) {
         this.$store.dispatch('searchPage', { page: tmpPage })
       }
     },
 
-    pageListHandler (){
+    pageListHandler() {
       this.showPageList = !this.showPageList
     },
 
-    selectPageHandler (page){
-      if (_.inRange(page, 1, this.totalPage + 1)){
+    selectPageHandler(page) {
+      if (_.inRange(page, 1, this.totalPage + 1)) {
         this.$store.dispatch('searchPage', { page })
         this.showPageList = !this.showPageList
       }
     },
 
-    fadeList (){
+    fadeList() {
       this.$refs.pictures.$el.childNodes.forEach((child, idx) => {
-        if (isNode(child)){
+        if (isNode(child)) {
           fadeIn(child)
         }
       })
     },
 
-    async enter (el, done){
+    async enter(el, done) {
       await fadeIn(el)
       done()
     }
@@ -159,7 +158,7 @@ export default {
 
     // item may remain unchanged as search occured
     // invoke fadeList() to force fadein transition
-    pictures (){
+    pictures() {
       this.fadeList()
     }
   }
