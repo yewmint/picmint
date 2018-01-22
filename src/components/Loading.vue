@@ -46,6 +46,7 @@ export default {
 
 .loading {
   @extend %center-child;
+
   width: 100%;
   height: 100%;
 }

@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "app/main.js",
   "scripts": {
-    "lint": "eslint \"src/**/*.{js,vue}\" && stylelint \"src/**/*.vue\" --syntax scss --fix",
+    "lint": "eslint \"src/**/*.{js,vue}\" && stylelint \"src/**/*.vue\" --syntax scss",
     "clean": "rimraf app/* && rimraf bundle/*",
     "build": "yarn run lint && yarn run build:main && yarn run build:renderer && yarn run app:deps && yarn run pack",
     "rebuild": "yarn run clean && yarn run build",

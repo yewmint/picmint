@@ -124,7 +124,7 @@ export default {
   grid-template-columns: 80px 300px;
   grid-template-rows: 32px;
   margin: 16px 0;
-  box-shadow: 0 1px 4px 1px #aaaaaa;
+  box-shadow: 0 1px 4px 1px #aaa;
 
   & p {
     line-height: 32px;
@@ -149,12 +149,13 @@ export default {
 
   & button {
     @extend %btn;
-    color: #ffffff;
+
+    color: #fff;
     background-color: #00a3af;
     height: 32px;
     width: initial;
     padding: 0 8px;
-    box-shadow: 0 1px 4px 1px #aaaaaa;
+    box-shadow: 0 1px 4px 1px #aaa;
 
     &:hover {
       background-color: #127c84;

@@ -77,9 +77,10 @@ export default {
 
 %control-btn {
   @extend %btn, %center-child;
+
   width: $frame-height;
   height: $frame-height;
-  background-color: #ffffff;
+  background-color: #fff;
 
   & i {
     color: #4c4c4c;
@@ -92,6 +93,7 @@ export default {
 
 .title-bar {
   @extend %center-child;
+
   height: $search-bar-height;
   background: linear-gradient(45deg, #5f3aa0, #c75bbf);
   padding-top: 20px;
@@ -108,6 +110,7 @@ export default {
 .tags-wrapper,
 .batch-wrapper {
   box-shadow: 0 5px 20px 1px rgba(0, 0, 0, 0.6);
+
   & button {
     @extend %control-btn;
   }

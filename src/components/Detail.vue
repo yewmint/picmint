@@ -238,6 +238,7 @@ export default {
 
   & button {
     @extend %btn;
+
     width: 32px;
     height: 32px;
     transition: box-shadow 200ms;
@@ -254,7 +255,7 @@ export default {
   position: absolute;
   top: 32px;
   width: 184px;
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.28);
 
   & p {
@@ -262,7 +263,7 @@ export default {
     padding: 4px 8px;
 
     &.selected {
-      background-color: #cccccc;
+      background-color: #ccc;
     }
   }
 }
@@ -298,6 +299,7 @@ export default {
   grid-template-columns: auto 32px;
   grid-template-rows: 32px;
   overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
   & p {
     padding: 4px 8px;
@@ -306,6 +308,7 @@ export default {
 
   & button {
     @extend %btn;
+
     width: 32px;
     height: 32px;
   }
@@ -313,10 +316,6 @@ export default {
 
 .tag-list {
   position: relative;
-}
-
-.tag {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tag-list-enter {

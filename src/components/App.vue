@@ -62,7 +62,7 @@ export default {
 @import 'common.sass';
 
 body {
-  background-color: #fff;
+  // background-color: #fff;
   overflow: hidden;
   -webkit-user-select: none;
   cursor: default;

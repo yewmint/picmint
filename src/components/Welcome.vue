@@ -30,6 +30,7 @@ export default {
 
 .welcome {
   @extend %center-child;
+
   width: 100%;
   height: 100%;
 }
@@ -44,6 +45,7 @@ export default {
 
 .open-store {
   @extend %btn, %center-child;
+
   border-radius: 4px;
   width: 160px;
   height: 60px;
@@ -51,7 +53,7 @@ export default {
   box-shadow: none;
 
   & i {
-    color: #ffffff;
+    color: #fff;
     font-size: 36px;
   }
 

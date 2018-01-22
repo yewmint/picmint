@@ -194,6 +194,7 @@ export default {
 
 .thumbnail-frame {
   @extend %center-child;
+
   height: 200px;
 }
 
@@ -224,6 +225,7 @@ export default {
 
 .pagination {
   @extend %center-child;
+
   width: 140px;
   margin: 20px auto;
   border-radius: 0;
@@ -244,6 +246,7 @@ export default {
 
   & button {
     @extend %btn;
+
     width: 60px;
   }
 
