@@ -164,7 +164,9 @@ export default {
 
     // tap tab to apply current hint
     handleTab() {
-      this.newTag = this.hints[this.hintIndex] + ' '
+      if (this.showInpuHint && this.hints.length > 0) {
+        this.newTag = this.hints[this.hintIndex] + ' '
+      }
     },
 
     // tap up to navigate to previous hint
