@@ -253,7 +253,7 @@ export default {
   & .page-list {
     position: absolute;
     bottom: 40px;
-    height: 6 * 40px;
+    max-height: 6 * 40px;
     overflow-y: auto;
     background-color: #fff;
     box-shadow: 0 2px 10px 1px rgba(99, 99, 99, 0.74);
